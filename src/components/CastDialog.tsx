@@ -142,6 +142,7 @@ export const CastDialog = ({ ability, open, onOpenChange, onCast }: CastDialogPr
               max={ability.maxIterations}
               value={iterations}
               onChange={(e) => setIterations(parseInt(e.target.value) || 1)}
+              className="[&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]"
             />
           </div>
           <div className="space-y-2">
@@ -153,6 +154,7 @@ export const CastDialog = ({ ability, open, onOpenChange, onCast }: CastDialogPr
               max={10000}
               value={delay}
               onChange={(e) => setDelay(parseInt(e.target.value) || 0)}
+              className="[&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]"
             />
           </div>
         </div>
