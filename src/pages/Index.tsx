@@ -6,9 +6,11 @@ import { StatCard } from "@/components/StatCard";
 import { AbilityButton } from "@/components/AbilityButton";
 import { CastDialog } from "@/components/CastDialog";
 import { ResponseLog } from "@/components/ResponseLog";
-import { HabiticaUser, AbilityConfig, CastResponse } from "@/types/habitica";
+import { ScheduledCasts } from "@/components/ScheduledCasts";
+import { HabiticaUser, AbilityConfig, CastResponse, ScheduledCast } from "@/types/habitica";
 import { fetchUserDetails, castAbility } from "@/services/habiticaApi";
 import { toast } from "@/hooks/use-toast";
+import { format } from "date-fns";
 
 // Define available abilities with their API endpoints (stubs)
 const ABILITIES: AbilityConfig[] = [
@@ -57,10 +59,28 @@ const Index = () => {
   const [selectedAbility, setSelectedAbility] = useState<AbilityConfig | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [responses, setResponses] = useState<CastResponse[]>([]);
+  const [scheduledCasts, setScheduledCasts] = useState<ScheduledCast[]>([]);
 
   useEffect(() => {
     loadUserData();
   }, []);
+
+  // Check scheduled casts every second
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date();
+      scheduledCasts.forEach((scheduledCast) => {
+        if (
+          scheduledCast.status === "pending" &&
+          scheduledCast.scheduledTime <= now
+        ) {
+          executeScheduledCast(scheduledCast);
+        }
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [scheduledCasts]);
 
   const loadUserData = async () => {
     setLoading(true);
@@ -83,8 +103,102 @@ const Index = () => {
     setDialogOpen(true);
   };
 
-  const handleCast = async (iterations: number, delay: number) => {
+  const handleCancelScheduled = (id: string) => {
+    setScheduledCasts((prev) => prev.filter((cast) => cast.id !== id));
+    toast({
+      title: "Scheduled cast cancelled",
+      description: "The scheduled cast has been removed.",
+    });
+  };
+
+  const executeScheduledCast = async (scheduledCast: ScheduledCast) => {
+    // Update status to executing
+    setScheduledCasts((prev) =>
+      prev.map((cast) =>
+        cast.id === scheduledCast.id ? { ...cast, status: "executing" } : cast
+      )
+    );
+
+    setCasting(true);
+    setResponses([]);
+    const newResponses: CastResponse[] = [];
+
+    try {
+      for (let i = 0; i < scheduledCast.iterations; i++) {
+        const result = await castAbility(scheduledCast.ability.endpoint);
+
+        const response: CastResponse = {
+          id: `${Date.now()}-${i}`,
+          httpCode: result.status,
+          timeElapsed: result.time,
+          responseSize: result.size,
+          timestamp: new Date(),
+        };
+
+        newResponses.push(response);
+        setResponses([...newResponses]);
+
+        if (i < scheduledCast.iterations - 1) {
+          await new Promise((resolve) => setTimeout(resolve, scheduledCast.delay));
+        }
+      }
+
+      toast({
+        title: "Scheduled cast complete!",
+        description: `Successfully cast ${scheduledCast.ability.name} ${scheduledCast.iterations} time(s)`,
+      });
+
+      // Update status to completed
+      setScheduledCasts((prev) =>
+        prev.map((cast) =>
+          cast.id === scheduledCast.id ? { ...cast, status: "completed" } : cast
+        )
+      );
+
+      await loadUserData();
+    } catch (error) {
+      toast({
+        title: "Scheduled cast failed",
+        description: "An error occurred while casting the ability.",
+        variant: "destructive",
+      });
+
+      // Update status to failed
+      setScheduledCasts((prev) =>
+        prev.map((cast) =>
+          cast.id === scheduledCast.id ? { ...cast, status: "failed" } : cast
+        )
+      );
+    } finally {
+      setCasting(false);
+    }
+  };
+
+  const handleCast = async (iterations: number, delay: number, scheduledTime?: Date) => {
     if (!selectedAbility) return;
+
+    // If scheduled, create a scheduled cast
+    if (scheduledTime) {
+      const newScheduledCast: ScheduledCast = {
+        id: `scheduled-${Date.now()}`,
+        ability: selectedAbility,
+        iterations,
+        delay,
+        scheduledTime,
+        status: "pending",
+      };
+
+      setScheduledCasts((prev) => [...prev, newScheduledCast]);
+
+      toast({
+        title: "Cast scheduled!",
+        description: `${selectedAbility.name} will be cast at ${format(scheduledTime, "PPP 'at' p")}`,
+      });
+
+      return;
+    }
+
+    // Otherwise, execute immediately
 
     setCasting(true);
     setResponses([]); // Clear previous responses
@@ -220,6 +334,12 @@ const Index = () => {
             ))}
           </div>
         </div>
+
+        {/* Scheduled Casts */}
+        <ScheduledCasts
+          scheduledCasts={scheduledCasts}
+          onCancel={handleCancelScheduled}
+        />
 
         {/* Response Log */}
         <ResponseLog responses={responses} onClear={() => setResponses([])} />
