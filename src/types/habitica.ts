@@ -35,6 +35,7 @@ export interface AbilityConfig {
 
 export interface CastResponse {
   id: string;
+  icon: string;
   httpCode: number;
   timeElapsed: number;
   responseSize: number;

@@ -129,6 +129,7 @@ const Index = () => {
 
         const response: CastResponse = {
           id: `${Date.now()}-${i}`,
+          icon: scheduledCast.ability.icon,
           httpCode: result.status,
           timeElapsed: result.time,
           responseSize: result.size,
@@ -199,10 +200,8 @@ const Index = () => {
     }
 
     // Otherwise, execute immediately
-
     setCasting(true);
-    setResponses([]); // Clear previous responses
-    const newResponses: CastResponse[] = [];
+    const newResponses: CastResponse[] = responses;
 
     try {
       for (let i = 0; i < iterations; i++) {
@@ -210,12 +209,13 @@ const Index = () => {
         
         const response: CastResponse = {
           id: `${Date.now()}-${i}`,
+          icon: selectedAbility.icon,
           httpCode: result.status,
           timeElapsed: result.time,
           responseSize: result.size,
           timestamp: new Date(),
         };
-        
+
         newResponses.push(response);
         setResponses([...newResponses]);
 
@@ -241,8 +241,7 @@ const Index = () => {
       setCasting(false);
     }
   };
-
-  // Always render the page; when loading, blur key sections instead of showing a blank screen
+  
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-6xl mx-auto space-y-6">
