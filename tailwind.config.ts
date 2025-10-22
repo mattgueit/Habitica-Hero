@@ -47,6 +47,22 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        hp: {
+          DEFAULT: "hsl(var(--hp))",
+          foreground: "hsl(var(--hp-foreground))",
+        },
+        exp: {
+          DEFAULT: "hsl(var(--exp))",
+          foreground: "hsl(var(--exp-foreground))",
+        },
+        mana: {
+          DEFAULT: "hsl(var(--mana))",
+          foreground: "hsl(var(--mana-foreground))",
+        },
+        quest: {
+          DEFAULT: "hsl(var(--quest))",
+          foreground: "hsl(var(--quest-foreground))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
