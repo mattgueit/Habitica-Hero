@@ -1,5 +1,9 @@
 export interface HabiticaUser {
-  username: string;
+  auth: {
+    local: {
+      username: string;
+    }
+  }
   stats: {
     hp: number;
     maxHealth: number;
@@ -12,8 +16,8 @@ export interface HabiticaUser {
     quest?: {
       key: string;
       progress?: {
-        hp?: number;
-        collect?: Record<string, { count: number; total: number }>;
+        up?: number;
+        collectedItems?: number;
       };
     };
   };

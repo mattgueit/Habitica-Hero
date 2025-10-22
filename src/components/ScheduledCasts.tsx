@@ -26,7 +26,7 @@ export const ScheduledCasts = ({ scheduledCasts, onCancel }: ScheduledCastsProps
             className="flex items-center justify-between p-3 rounded-lg bg-muted/50 border"
           >
             <div className="flex items-center gap-3">
-              <span className="text-2xl">{cast.ability.icon}</span>
+                <img src={cast.ability.icon} alt={cast.ability.name} className="w-10 h-10 object-contain" />
               <div>
                 <p className="font-medium">{cast.ability.name}</p>
                 <p className="text-sm text-muted-foreground">

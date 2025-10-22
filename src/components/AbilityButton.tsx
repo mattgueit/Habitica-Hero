@@ -26,7 +26,11 @@ export const AbilityButton = ({ ability, onClick, disabled }: AbilityButtonProps
         typeColors[ability.type]
       )}
     >
-      <span className="text-3xl">{ability.icon}</span>
+      <img
+          src={ability.icon}
+          alt={ability.name}
+          className="w-10 h-10 object-contain"
+      />
       <span className="text-sm font-semibold">{ability.name}</span>
     </Button>
   );

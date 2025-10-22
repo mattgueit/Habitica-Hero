@@ -15,40 +15,40 @@ import { format } from "date-fns";
 // Define available abilities with their API endpoints (stubs)
 const ABILITIES: AbilityConfig[] = [
   {
-    id: "blessing",
-    name: "Blessing",
-    type: "buff",
-    icon: "✨",
-    endpoint: "/user/class/cast/blessing",
-    minIterations: 1,
-    maxIterations: 10,
-  },
-  {
-    id: "fireball",
-    name: "Fireball",
+    id: "brutalSmash",
+    name: "Brutal Smash",
     type: "attack",
-    icon: "🔥",
-    endpoint: "/user/class/cast/fireball",
+    icon: "/brutalSmash.png",
+    endpoint: "/user/class/cast/smash?", // TODO: get task ID
     minIterations: 1,
     maxIterations: 20,
   },
   {
-    id: "heal",
-    name: "Healing Light",
+    id: "defensiveStance",
+    name: "Defensive Stance",
     type: "heal",
-    icon: "💚",
-    endpoint: "/user/class/cast/healAll",
+    icon: "/defensiveStance.png",
+    endpoint: "/user/class/cast/defensiveStance",
     minIterations: 1,
-    maxIterations: 5,
+    maxIterations: 20,
   },
   {
-    id: "protect",
-    name: "Protective Aura",
-    type: "special",
-    icon: "🛡️",
-    endpoint: "/user/class/cast/protectAura",
+    id: "valorousPresence",
+    name: "Valorous Presence",
+    type: "buff",
+    icon: "/valorousPresence.png",
+    endpoint: "/user/class/cast/valorousPresence",
     minIterations: 1,
-    maxIterations: 15,
+    maxIterations: 20,
+  },
+  {
+    id: "intimidatingGaze",
+    name: "Intimidating Gaze",
+    type: "special",
+    icon: "/intimidatingGaze.png",
+    endpoint: "/user/class/cast/intimidate",
+    minIterations: 1,
+    maxIterations: 20,
   },
 ];
 
@@ -257,10 +257,11 @@ const Index = () => {
         <Card className="p-6 bg-gradient-to-r from-primary to-accent border-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Sparkles className="h-8 w-8 text-white" />
+              <img src="/habitica-logo.svg" alt="Habitica Logo" className="w-12 h-12 object-contain" />
+              {/*<Sparkles className="h-8 w-8 text-white" />*/}
               <div>
                 <h1 className="text-3xl font-bold text-white">
-                  {userData?.username || "Habitica Hero"}
+                  {userData?.auth.local.username || "Habitica Hero"}
                 </h1>
                 <p className="text-white/80 text-sm">Habitica Dashboard</p>
               </div>
@@ -298,8 +299,8 @@ const Index = () => {
             variant="mana"
           />
           <StatCard
-            label="Quest Progress"
-            value={userData?.party?.quest?.progress?.hp || 0}
+            label="Pending Damage"
+            value={userData?.party?.quest?.progress?.up || 0}
             variant="quest"
             showProgress={false}
           />
@@ -309,7 +310,6 @@ const Index = () => {
         {userData?.party?.quest && (
           <Card className="p-4 bg-quest/10 border-quest">
             <div className="flex items-center gap-2">
-              <span className="text-2xl">🐉</span>
               <div>
                 <p className="text-sm text-muted-foreground">Current Quest</p>
                 <p className="font-semibold text-quest-foreground">

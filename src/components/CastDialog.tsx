@@ -64,7 +64,7 @@ export const CastDialog = ({ ability, open, onOpenChange, onCast }: CastDialogPr
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <span className="text-2xl">{ability.icon}</span>
+            <img src={ability.icon} alt={ability.name} className="w-10 h-10 object-contain" />
             Cast {ability.name}
           </DialogTitle>
           <DialogDescription>

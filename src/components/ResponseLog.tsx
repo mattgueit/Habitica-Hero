@@ -34,16 +34,17 @@ export const ResponseLog = ({ responses, onClear }: ResponseLogProps) => {
             No responses yet. Cast an ability to see results.
           </p>
         ) : (
-          responses.map((response) => (
+          responses.map((response, index) => (
             <div
               key={response.id}
               className="flex items-center gap-4 py-2 px-3 bg-secondary rounded border border-border"
             >
+              <span className="text-muted-foreground w-12">{index + 1}</span>
               <span className={cn("font-bold w-12", getStatusColor(response.httpCode))}>
                 {response.httpCode}
               </span>
               <span className="text-muted-foreground w-20">{response.timeElapsed}ms</span>
-              <span className="text-muted-foreground w-24">{response.responseSize}B</span>
+              <span className="text-muted-foreground w-24">{response.responseSize}KB</span>
               <span className="text-muted-foreground text-xs flex-1 text-right">
                 {response.timestamp.toLocaleTimeString()}
               </span>
