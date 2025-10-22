@@ -27,14 +27,14 @@ interface CastDialogProps {
 
 export const CastDialog = ({ ability, open, onOpenChange, onCast }: CastDialogProps) => {
   const [iterations, setIterations] = useState(1);
-  const [delay, setDelay] = useState(1000);
+  const [delay, setDelay] = useState(0);
   const [castMode, setCastMode] = useState<"immediate" | "scheduled">("immediate");
   const [scheduledDate, setScheduledDate] = useState<Date>();
   const [scheduledTime, setScheduledTime] = useState("12:00");
 
   const handleCast = () => {
     if (!ability) return;
-    
+
     const validIterations = Math.max(
       ability.minIterations,
       Math.min(ability.maxIterations, iterations)
@@ -51,7 +51,7 @@ export const CastDialog = ({ ability, open, onOpenChange, onCast }: CastDialogPr
     onCast(validIterations, validDelay, scheduledDateTime);
     onOpenChange(false);
     setIterations(1);
-    setDelay(1000);
+    setDelay(0);
     setCastMode("immediate");
     setScheduledDate(undefined);
     setScheduledTime("12:00");
@@ -133,7 +133,7 @@ export const CastDialog = ({ ability, open, onOpenChange, onCast }: CastDialogPr
 
           <div className="space-y-2">
             <Label htmlFor="iterations">
-              Iterations (min: {ability.minIterations}, max: {ability.maxIterations})
+              Iterations ({ability.minIterations} - {ability.maxIterations})
             </Label>
             <Input
               id="iterations"
