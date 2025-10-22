@@ -1,21 +1,27 @@
 import { HabiticaUser } from "@/types/habitica";
 
-// Stub API - replace with your actual Habitica credentials and endpoints
 const HABITICA_API_BASE = "https://habitica.com/api/v3";
-const API_USER = "YOUR_USER_ID"; // Replace with your user ID
-const API_TOKEN = "YOUR_API_TOKEN"; // Replace with your API token
 
-const headers = {
-  "x-client": API_USER + "-WEB-APP",
-  "x-api-user": API_USER,
-  "x-api-key": API_TOKEN,
-  "Content-Type": "application/json",
-};
+function getStoredCredentials() {
+  const id = sessionStorage.getItem("habitica_user_id");
+  const apiToken = sessionStorage.getItem("habitica_api_token");
+  return { id, apiToken } as { id: string | null; apiToken: string | null };
+}
+
+function buildHeaders() {
+  const { id, apiToken } = getStoredCredentials();
+  return {
+    "x-client": (id || "UNKNOWN") + "-WEB-APP",
+    "x-api-user": id || "",
+    "x-api-key": apiToken || "",
+    "Content-Type": "application/json",
+  } as Record<string, string>;
+}
 
 export const fetchUserDetails = async (): Promise<HabiticaUser> => {
   const url = `${HABITICA_API_BASE}/user`;
 
-  const response = await fetch(url, { headers });
+  const response = await fetch(url, { headers: buildHeaders() });
   if (!response.ok) throw new Error(`API error: ${response.status}`);
   const data = await response.json();
   return data.data;
@@ -45,6 +51,35 @@ export const fetchUserDetails = async (): Promise<HabiticaUser> => {
   // };
 };
 
+export async function login(username: string, password: string): Promise<{ id: string; apiToken: string }> {
+  const url = `${HABITICA_API_BASE}/user/auth/local/login`;
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password }),
+  });
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Login failed: ${response.status} ${text}`);
+  }
+  const data = await response.json();
+  const { id, apiToken } = data.data || {};
+  if (!id || !apiToken) {
+    throw new Error("Login response missing credentials");
+  }
+  return { id, apiToken };
+}
+
+export function isAuthenticated(): boolean {
+  const { id, apiToken } = getStoredCredentials();
+  return Boolean(id && apiToken);
+}
+
+export function logout(): void {
+  sessionStorage.removeItem("habitica_user_id");
+  sessionStorage.removeItem("habitica_api_token");
+}
+
 export const castAbility = async (endpoint: string): Promise<{ status: number; size: number; time: number }> => {
   const startTime = performance.now();
   
@@ -52,7 +87,7 @@ export const castAbility = async (endpoint: string): Promise<{ status: number; s
 
   const response = await fetch(url, {
     method: 'POST',
-    headers,
+    headers: buildHeaders(),
   });
 
   const endTime = performance.now();

@@ -8,9 +8,10 @@ import { CastDialog } from "@/components/CastDialog";
 import { ResponseLog } from "@/components/ResponseLog";
 import { ScheduledCasts } from "@/components/ScheduledCasts";
 import { HabiticaUser, AbilityConfig, CastResponse, ScheduledCast } from "@/types/habitica";
-import { fetchUserDetails, castAbility } from "@/services/habiticaApi";
+import { fetchUserDetails, castAbility, isAuthenticated, logout } from "@/services/habiticaApi";
 import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
 
 // Define available abilities with their API endpoints (stubs)
 const ABILITIES: AbilityConfig[] = [
@@ -53,6 +54,7 @@ const ABILITIES: AbilityConfig[] = [
 ];
 
 const Index = () => {
+  const navigate = useNavigate();
   const [userData, setUserData] = useState<HabiticaUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [casting, setCasting] = useState(false);
@@ -62,6 +64,10 @@ const Index = () => {
   const [scheduledCasts, setScheduledCasts] = useState<ScheduledCast[]>([]);
 
   useEffect(() => {
+    if (!isAuthenticated()) {
+      navigate("/login");
+      return;
+    }
     loadUserData();
   }, []);
 
@@ -90,7 +96,7 @@ const Index = () => {
     } catch (error) {
       toast({
         title: "Error loading user data",
-        description: "Failed to fetch Habitica user details. Using mock data.",
+        description: "Failed to fetch Habitica user details.",
         variant: "destructive",
       });
     } finally {
@@ -241,7 +247,7 @@ const Index = () => {
       setCasting(false);
     }
   };
-  
+
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-6xl mx-auto space-y-6">
@@ -258,15 +264,29 @@ const Index = () => {
                 <p className="text-white/80 text-sm">Habitica Dashboard</p>
               </div>
             </div>
-            <Button
-              onClick={loadUserData}
-              variant="secondary"
-              size="sm"
-              disabled={loading || casting}
-            >
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Refresh
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={loadUserData}
+                variant="secondary"
+                size="sm"
+                disabled={loading || casting}
+              >
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Refresh
+              </Button>
+              <Button
+                onClick={() => {
+                  logout();
+                  toast({ title: "Logged out", description: "Your session has been cleared." });
+                  navigate("/login");
+                }}
+                variant="default"
+                size="sm"
+                disabled={casting}
+              >
+                Log out
+              </Button>
+            </div>
           </div>
         </Card>
 
