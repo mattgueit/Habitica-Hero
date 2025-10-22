@@ -108,3 +108,38 @@ export const castAbility = async (endpoint: string): Promise<{ status: number; s
   //   time: Math.round(endTime - startTime),
   // };
 };
+
+// Fetch all user tasks
+export const fetchTasks = async (): Promise<Array<{ id: string }>> => {
+  const url = `${HABITICA_API_BASE}/tasks/user`;
+  const response = await fetch(url, { headers: buildHeaders() });
+  if (!response.ok) throw new Error(`API error: ${response.status}`);
+  const data = await response.json();
+  // Return only minimal shape needed for targeting (id/uuid)
+  return (data.data || []).map((t: { id: string }) => ({ id: t.id }));
+};
+
+// Cast Brutal Smash against the first available task of the user
+export const castBrutalSmash = async (): Promise<{ status: number; size: number; time: number }> => {
+  // Load tasks
+  const tasks = await fetchTasks();
+  if (!tasks || tasks.length === 0) {
+    throw new Error("No tasks available to target with Brutal Smash");
+  }
+  const targetTaskId = tasks[0].id;
+
+  const startTime = performance.now();
+  const url = `${HABITICA_API_BASE}/user/class/cast/smash?targetId=${encodeURIComponent(targetTaskId)}`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: buildHeaders(),
+  });
+  const endTime = performance.now();
+  const data = await response.text();
+
+  return {
+    status: response.status,
+    size: new Blob([data]).size / 1000,
+    time: Math.round(endTime - startTime),
+  };
+};

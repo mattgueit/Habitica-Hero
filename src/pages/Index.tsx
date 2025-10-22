@@ -8,7 +8,7 @@ import { CastDialog } from "@/components/CastDialog";
 import { ResponseLog } from "@/components/ResponseLog";
 import { ScheduledCasts } from "@/components/ScheduledCasts";
 import { HabiticaUser, AbilityConfig, CastResponse, ScheduledCast } from "@/types/habitica";
-import { fetchUserDetails, castAbility, isAuthenticated, logout } from "@/services/habiticaApi";
+import { fetchUserDetails, castAbility, isAuthenticated, logout, castBrutalSmash } from "@/services/habiticaApi";
 import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
@@ -20,7 +20,7 @@ const ABILITIES: AbilityConfig[] = [
     name: "Brutal Smash",
     type: "attack",
     icon: "/brutalSmash.png",
-    endpoint: "/user/class/cast/smash?", // TODO: get task ID
+    endpoint: "/user/class/cast/smash",
     minIterations: 1,
     maxIterations: 20,
   },
@@ -131,7 +131,9 @@ const Index = () => {
 
     try {
       for (let i = 0; i < scheduledCast.iterations; i++) {
-        const result = await castAbility(scheduledCast.ability.endpoint);
+        const result = scheduledCast.ability.id === "brutalSmash"
+          ? await castBrutalSmash()
+          : await castAbility(scheduledCast.ability.endpoint);
 
         const response: CastResponse = {
           id: `${Date.now()}-${i}`,
@@ -211,7 +213,9 @@ const Index = () => {
 
     try {
       for (let i = 0; i < iterations; i++) {
-        const result = await castAbility(selectedAbility.endpoint);
+        const result = selectedAbility.id === "brutalSmash"
+          ? await castBrutalSmash()
+          : await castAbility(selectedAbility.endpoint);
         
         const response: CastResponse = {
           id: `${Date.now()}-${i}`,
