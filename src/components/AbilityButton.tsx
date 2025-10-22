@@ -10,10 +10,10 @@ interface AbilityButtonProps {
 
 export const AbilityButton = ({ ability, onClick, disabled }: AbilityButtonProps) => {
   const typeColors = {
-    buff: 'bg-gradient-to-br from-purple-600 to-purple-800 hover:from-purple-500 hover:to-purple-700',
-    attack: 'bg-gradient-to-br from-red-600 to-red-800 hover:from-red-500 hover:to-red-700',
-    heal: 'bg-gradient-to-br from-green-600 to-green-800 hover:from-green-500 hover:to-green-700',
-    special: 'bg-gradient-to-br from-pink-600 to-pink-800 hover:from-pink-500 hover:to-pink-700',
+    attack: 'bg-gradient-to-br from-amber-400 to-amber-600 hover:from-amber-300 hover:to-amber-500',
+    heal: 'bg-gradient-to-br from-emerald-400 to-emerald-600 hover:from-emerald-300 hover:to-emerald-500',
+    buff: 'bg-gradient-to-br from-violet-400 to-violet-600 hover:from-violet-300 hover:to-violet-500',
+    special: 'bg-gradient-to-br from-sky-400 to-sky-600 hover:from-sky-300 hover:to-sky-500',
   };
 
   return (
