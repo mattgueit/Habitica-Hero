@@ -130,6 +130,8 @@ const Index = () => {
     const newResponses: CastResponse[] = [];
 
     try {
+      let successfulCasts = 0;
+      let failedCasts = 0;
       for (let i = 0; i < scheduledCast.iterations; i++) {
         const result = scheduledCast.ability.id === "brutalSmash"
           ? await castBrutalSmash()
@@ -144,6 +146,12 @@ const Index = () => {
           timestamp: new Date(),
         };
 
+        if (response.httpCode === 200) {
+          successfulCasts++;
+        } else {
+          failedCasts++;
+        }
+
         newResponses.push(response);
         setResponses([...newResponses]);
 
@@ -154,7 +162,7 @@ const Index = () => {
 
       toast({
         title: "Scheduled cast complete!",
-        description: `Successfully cast ${scheduledCast.ability.name} ${scheduledCast.iterations} time(s)`,
+        description: `Cast ${scheduledCast.ability.name} ${scheduledCast.iterations} time(s). ${successfulCasts} cast(s) were successful. ${failedCasts} cast(s) failed.`,
       });
 
       // Update status to completed
