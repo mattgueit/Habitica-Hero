@@ -5,6 +5,7 @@ export interface HabiticaUser {
     }
   }
   stats: {
+    lvl: number;
     hp: number;
     maxHealth: number;
     exp: number;

@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, RefreshCw, Sparkles } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { StatCard } from "@/components/StatCard";
 import { AbilityButton } from "@/components/AbilityButton";
 import { CastDialog } from "@/components/CastDialog";
 import { ResponseLog } from "@/components/ResponseLog";
 import { ScheduledCasts } from "@/components/ScheduledCasts";
+import { Badge } from "@/components/ui/badge";
 import { HabiticaUser, AbilityConfig, CastResponse, ScheduledCast } from "@/types/habitica";
 import { fetchUserDetails, castAbility, isAuthenticated, logout, castBrutalSmash } from "@/services/habiticaApi";
 import { toast } from "@/hooks/use-toast";
@@ -180,7 +181,7 @@ const Index = () => {
         variant: "destructive",
       });
 
-      // Update status to failed
+      // Update status to 'failed'
       setScheduledCasts((prev) =>
         prev.map((cast) =>
           cast.id === scheduledCast.id ? { ...cast, status: "failed" } : cast
@@ -270,9 +271,16 @@ const Index = () => {
               <img src="/habitica-logo.svg" alt="Habitica Logo" className="w-12 h-12 object-contain" />
               {/*<Sparkles className="h-8 w-8 text-white" />*/}
               <div>
-                <h1 className="text-3xl font-bold text-white">
-                  {userData?.auth.local.username || "Habitica Hero"}
-                </h1>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-3xl font-bold text-white">
+                    {userData?.auth?.local?.username || "Habitica Hero"}
+                  </h1>
+                  {userData?.stats?.lvl !== undefined && (
+                    <Badge className="text-white bg-white/10 border-white/20 backdrop-blur-sm">
+                      Lv. {userData.stats.lvl}
+                    </Badge>
+                  )}
+                </div>
                 <p className="text-white/80 text-sm">Habitica Dashboard</p>
               </div>
             </div>
