@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
 import { StatCard } from "@/components/StatCard";
+import { BuffTimerCard } from "@/components/BuffTimerCard";
 import { AbilityButton } from "@/components/AbilityButton";
 import { CastDialog } from "@/components/CastDialog";
 import { ResponseLog } from "@/components/ResponseLog";
@@ -330,12 +331,7 @@ const Index = () => {
             maxValue={userData?.stats.maxMP || 50}
             variant="mana"
           />
-          <StatCard
-            label="Pending Damage"
-            value={userData?.party?.quest?.progress?.up || 0}
-            variant="quest"
-            showProgress={false}
-          />
+          <BuffTimerCard />
         </div>
 
         {/* Current Quest */}
