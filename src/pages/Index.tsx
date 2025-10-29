@@ -10,6 +10,7 @@ import { ScheduledCasts } from "@/components/ScheduledCasts";
 import { Badge } from "@/components/ui/badge";
 import { HabiticaUser, AbilityConfig, CastResponse, ScheduledCast } from "@/types/habitica";
 import { fetchUserDetails, castAbility, isAuthenticated, logout, castBrutalSmash } from "@/services/habiticaApi";
+import { getQuestData } from "@/lib/questData";
 import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
@@ -340,12 +341,34 @@ const Index = () => {
         {/* Current Quest */}
         {userData?.party?.quest && (
           <Card className={`p-4 bg-quest/10 border-quest ${loading ? 'blur-sm pointer-events-none select-none' : ''}`}>
-            <div className="flex items-center gap-2">
-              <div>
-                <p className="text-sm text-muted-foreground">Current Quest</p>
-                <p className="font-semibold text-quest-foreground">
-                  {userData.party.quest.key}
-                </p>
+            <div className="flex items-center gap-4">
+              {getQuestData(userData.party.quest.key)?.image && (
+                <div className="flex-shrink-0">
+                  <img
+                    src={getQuestData(userData.party.quest.key)?.image}
+                    alt={getQuestData(userData.party.quest.key)?.name || "Quest"}
+                    className="w-[78px] h-[78px] object-cover rounded-lg border-2 border-quest/20"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = 'none';
+                    }}
+                  />
+                </div>
+              )}
+              <div className="flex-grow">
+                <p className="text-sm text-muted-foreground mb-1">Current Quest</p>
+                <h3 className="font-semibold text-quest-foreground text-lg leading-tight">
+                  {getQuestData(userData.party.quest.key)?.name || userData.party.quest.key}
+                </h3>
+                <div className="flex items-center gap-4 mt-2">
+                  <Badge variant="secondary" className="text-xs">
+                    {getQuestData(userData.party.quest.key)?.type || 'Unknown'}
+                  </Badge>
+                  {getQuestData(userData.party.quest.key)?.boss_HP > 0 ? (
+                    <span className="text-sm text-muted-foreground">
+                      Boss HP: {getQuestData(userData.party.quest.key)?.boss_HP}
+                    </span>
+                  ) : null}
+                </div>
               </div>
             </div>
           </Card>
