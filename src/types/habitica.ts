@@ -14,6 +14,7 @@ export interface HabiticaUser {
     maxMP: number;
   };
   party?: {
+    _id?: string;
     quest?: {
       key: string;
       progress?: {
@@ -23,6 +24,14 @@ export interface HabiticaUser {
     };
   };
 }
+
+export interface QuestData {
+  name: string;
+  type: string;
+  boss_HP: number;
+  image: string;
+}
+
 
 export interface AbilityConfig {
   id: string;

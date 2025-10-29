@@ -20,7 +20,7 @@ const ABILITIES: AbilityConfig[] = [
     id: "brutalSmash",
     name: "Brutal Smash",
     type: "attack",
-    icon: "/brutalSmash.png",
+    icon: "/skills/brutalSmash.png",
     endpoint: "/user/class/cast/smash",
     minIterations: 1,
     maxIterations: 20,
@@ -29,7 +29,7 @@ const ABILITIES: AbilityConfig[] = [
     id: "defensiveStance",
     name: "Defensive Stance",
     type: "heal",
-    icon: "/defensiveStance.png",
+    icon: "/skills/defensiveStance.png",
     endpoint: "/user/class/cast/defensiveStance",
     minIterations: 1,
     maxIterations: 20,
@@ -38,7 +38,7 @@ const ABILITIES: AbilityConfig[] = [
     id: "valorousPresence",
     name: "Valorous Presence",
     type: "buff",
-    icon: "/valorousPresence.png",
+    icon: "/skills/valorousPresence.png",
     endpoint: "/user/class/cast/valorousPresence",
     minIterations: 1,
     maxIterations: 20,
@@ -47,7 +47,7 @@ const ABILITIES: AbilityConfig[] = [
     id: "intimidatingGaze",
     name: "Intimidating Gaze",
     type: "special",
-    icon: "/intimidatingGaze.png",
+    icon: "/skills/intimidatingGaze.png",
     endpoint: "/user/class/cast/intimidate",
     minIterations: 1,
     maxIterations: 20,
@@ -127,7 +127,6 @@ const Index = () => {
     );
 
     setCasting(true);
-    setResponses([]);
     const newResponses: CastResponse[] = [];
 
     try {
