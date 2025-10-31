@@ -92,7 +92,7 @@ export const BuffTimerCard = () => {
               Next Buff
             </span>
           </div>
-          <div className="text-lg font-bold text-green-600">
+          <div className="text-lg font-bold text-violet-600">
             Ready to cast!
           </div>
         </div>
@@ -107,7 +107,7 @@ export const BuffTimerCard = () => {
           <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
             Next Buff
           </span>
-          <span className={cn("text-lg font-bold", canCast ? "text-green-600" : "text-violet-600")}>
+          <span className={cn("text-lg font-bold", "text-violet-600")}>
             {timeRemaining || "Calculating..."}
           </span>
         </div>
