@@ -154,7 +154,7 @@ const Index = () => {
           failedCasts++;
         }
 
-        newResponses.push(response);
+        newResponses.unshift(response);
         setResponses([...newResponses]);
 
         if (i < scheduledCast.iterations - 1) {
@@ -236,7 +236,7 @@ const Index = () => {
           timestamp: new Date(),
         };
 
-        newResponses.push(response);
+        newResponses.unshift(response);
         setResponses([...newResponses]);
 
         if (i < iterations - 1) {

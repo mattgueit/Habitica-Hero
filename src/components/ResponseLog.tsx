@@ -39,7 +39,7 @@ export const ResponseLog = ({ responses, onClear }: ResponseLogProps) => {
               key={response.id}
               className="flex items-center gap-4 py-2 px-3 bg-secondary rounded border border-border"
             >
-              <span className="text-muted-foreground w-12">{index + 1}</span>
+              <span className="text-muted-foreground w-12">{responses.length - index}</span>
               <img src={response.icon} alt="buffIcon" className="w-8 h-8 object-contain" />
               <span className={cn("font-bold w-12", getStatusColor(response.httpCode))}>
                 {response.httpCode}
