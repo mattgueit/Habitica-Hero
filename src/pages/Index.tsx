@@ -361,9 +361,19 @@ const Index = () => {
                   </Badge>
                   {getQuestData(userData.party.quest.key)?.boss_HP > 0 ? (
                     <span className="text-sm text-muted-foreground">
-                      Boss HP: {getQuestData(userData.party.quest.key)?.boss_HP}
+                      Total HP: {getQuestData(userData.party.quest.key)?.boss_HP}
                     </span>
                   ) : null}
+                  {getQuestData(userData.party.quest.key)?.type == "boss" && (
+                    <span className="text-sm text-muted-foreground">
+                      Pending Damage: {Math.round(userData.party.quest.progress.up)}
+                    </span>
+                  )}
+                  {getQuestData(userData.party.quest.key)?.type == "collection" && (
+                      <span className="text-sm text-muted-foreground">
+                      Collected Items: {userData.party.quest.progress.collectedItems}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
