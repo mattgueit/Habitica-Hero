@@ -7,6 +7,24 @@ const QUEST_DATA: Record<string, QuestData> = {
         "boss_HP": 100,
         "image": "/bosses/basilist.png"
     },
+    "atom1": {
+        "name": "Attack of the Mundane, Part 1: Dish Disaster!",
+        "type": "collection",
+        "boss_HP": 0,
+        "image": "/bosses/atom1.png"
+    },
+    "atom2": {
+        "name": "Attack of the Mundane, Part 2: The SnackLess Monster",
+        "type": "collection",
+        "boss_HP": 300,
+        "image": "/bosses/atom2.png"
+    },
+    "atom3": {
+        "name": "Attack of the Mundane, Part 3: The Laundromancer",
+        "type": "collection",
+        "boss_HP": 800,
+        "image": "/bosses/atom3.png"
+    },
     "dustbunnies": {
         "name": "The Feral Dust Bunnies",
         "type": "boss",
@@ -22,7 +40,7 @@ const QUEST_DATA: Record<string, QuestData> = {
     "dilatoryDistress2": {
         "name": "Dilatory Distress, Part 2: Creatures of the Crevasse",
         "type": "boss",
-        "boss_HP": 0,
+        "boss_HP": 500,
         "image": "/bosses/dilatoryDistress2.png"
     },
     "dilatoryDistress3": {
@@ -34,7 +52,7 @@ const QUEST_DATA: Record<string, QuestData> = {
     "mayhemMistiflying1": {
         "name": "Mayhem in Mistiflying, Part 1: In Which Mistiflying Experiences a Dreadful Bother",
         "type": "boss",
-        "boss_HP": 0,
+        "boss_HP": 500,
         "image": "/bosses/mayhemMistiflying1.png"
     },
     "mayhemMistiflying2": {
@@ -52,7 +70,7 @@ const QUEST_DATA: Record<string, QuestData> = {
     "stoikalmCalamity1": {
         "name": "Stoïkalm Calamity, Part 1: Earthen Enemies",
         "type": "boss",
-        "boss_HP": 0,
+        "boss_HP": 500,
         "image": "/bosses/stoikalmCalamity1.png"
     },
     "stoikalmCalamity2": {
@@ -70,7 +88,7 @@ const QUEST_DATA: Record<string, QuestData> = {
     "taskwoodsTerror1": {
         "name": "Terror in the Taskwoods, Part 1: The Blaze in the Taskwoods",
         "type": "boss",
-        "boss_HP": 0,
+        "boss_HP": 500,
         "image": "/bosses/taskwoodsTerror1.png"
     },
     "taskwoodsTerror2": {
@@ -100,13 +118,13 @@ const QUEST_DATA: Record<string, QuestData> = {
     "lostMasterclasser3": {
         "name": "The Mystery of the Masterclassers, Part 3: City in the Sands",
         "type": "boss",
-        "boss_HP": 0,
+        "boss_HP": 2000,
         "image": "/bosses/lostMasterclasser3.png"
     },
     "lostMasterclasser4": {
         "name": "The Mystery of the Masterclassers, Part 4: The Lost Masterclasser",
         "type": "boss",
-        "boss_HP": 0,
+        "boss_HP": 3000,
         "image": "/bosses/lostMasterclasser4.png"
     },
     "alligator": {
@@ -124,7 +142,7 @@ const QUEST_DATA: Record<string, QuestData> = {
     "axolotl": {
         "name": "The Magical Axolotl",
         "type": "boss",
-        "boss_HP": 0,
+        "boss_HP": 500,
         "image": "/bosses/axolotl.png"
     },
     "badger": {
@@ -382,7 +400,7 @@ const QUEST_DATA: Record<string, QuestData> = {
     "trex_undead": {
         "name": "The Dinosaur Unearthed",
         "type": "boss",
-        "boss_HP": 0,
+        "boss_HP": 500,
         "image": "/bosses/trex_undead.png"
     },
     "triceratops": {
@@ -454,7 +472,7 @@ const QUEST_DATA: Record<string, QuestData> = {
     "pinkMarble": {
         "name": "Calm the Corrupted Cupid",
         "type": "boss",
-        "boss_HP": 0,
+        "boss_HP": 1200,
         "image": "/bosses/pinkMarble.png"
     },
     "ruby": {
@@ -502,19 +520,19 @@ const QUEST_DATA: Record<string, QuestData> = {
     "waffle": {
         "name": "Waffling with the Fool: Disaster Breakfast!",
         "type": "boss",
-        "boss_HP": 0,
+        "boss_HP": 500,
         "image": "/bosses/waffle.png"
     },
     "virtualpet": {
         "name": "Virtual Mayhem with the April Fool: The Beepening",
         "type": "boss",
-        "boss_HP": 0,
+        "boss_HP": 500,
         "image": "/bosses/virtualpet.png"
     },
     "fungi": {
         "name": "The Moody Mushroom",
         "type": "boss",
-        "boss_HP": 0,
+        "boss_HP": 500,
         "image": "/bosses/fungi.png"
     },
     "mundane1": {
