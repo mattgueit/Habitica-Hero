@@ -274,7 +274,7 @@ const Index = () => {
               <div>
                 <div className="flex items-center gap-2">
                   <h1 className="text-3xl font-bold text-white">
-                    {userData?.auth?.local?.username || "No user found"}
+                    {userData?.auth?.local?.username || "Habitica Hero"}
                   </h1>
                   {userData?.stats?.lvl !== undefined && (
                     <Badge className="text-white bg-white/10 border-white/20 backdrop-blur-sm mt-2">
