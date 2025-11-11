@@ -158,11 +158,11 @@ export const CastDialog = ({ ability, open, onOpenChange, onCast }: CastDialogPr
             />
           </div>
         </div>
-        <DialogFooter>
+        <DialogFooter className="flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
+          <Button onClick={handleCast}>Cast Ability</Button>
           <Button variant="secondary" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleCast}>Cast Ability</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
