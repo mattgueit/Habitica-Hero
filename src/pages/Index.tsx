@@ -266,31 +266,34 @@ const Index = () => {
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
-        <Card className="p-6 bg-gradient-to-r from-primary to-accent border-0">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <img src="/habitica-logo.svg" alt="Habitica Logo" className="w-12 h-12 object-contain" />
+        <Card className="p-4 sm:p-6 bg-gradient-to-r from-primary to-accent border-0">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-center gap-3 min-w-0 flex-1">
+              <img src="/habitica-logo.svg" alt="Habitica Logo" className="w-12 h-12 object-contain flex-shrink-0" />
               {/*<Sparkles className="h-8 w-8 text-white" />*/}
-              <div>
-                <div className="flex items-center gap-2">
-                  <h1 className="text-3xl font-bold text-white">
-                    {userData?.auth?.local?.username || "Habitica Hero"}
-                  </h1>
-                  {userData?.stats?.lvl !== undefined && (
-                    <Badge className="text-white bg-white/10 border-white/20 backdrop-blur-sm mt-2">
-                      Lv. {userData.stats.lvl}
-                    </Badge>
-                  )}
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-col items-left gap-2">
+                  <div className="flex items-center gap-2">
+                    <h1 className="text-2xl sm:text-3xl font-bold text-white truncate">
+                      {userData?.auth?.local?.username || "Habitica Hero"}
+                    </h1>
+                    {userData?.stats?.lvl !== undefined && (
+                      <Badge className="text-white bg-white/10 border-white/20 backdrop-blur-sm self-start mt-2 lg:mt-3">
+                        Lv. {userData.stats.lvl}
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="text-white/80 text-sm lg:mt-2">Habitica Dashboard</p>
                 </div>
-                <p className="text-white/80 text-sm">Habitica Dashboard</p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-shrink-0">
               <Button
                 onClick={loadUserData}
                 variant="secondary"
                 size="sm"
                 disabled={loading || casting}
+                className="text-xs sm:text-sm"
               >
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Refresh
@@ -304,6 +307,7 @@ const Index = () => {
                 variant="default"
                 size="sm"
                 disabled={casting}
+                className="text-xs sm:text-sm"
               >
                 Log out
               </Button>
