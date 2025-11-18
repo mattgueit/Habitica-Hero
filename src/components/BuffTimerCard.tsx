@@ -1,99 +1,94 @@
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
-import { Clock } from "lucide-react";
-import { getNextBuffTime } from "@/services/habiticaApi";
+import { Zap } from "lucide-react";
+import { fetchPartyChat, getCachedUsername, fetchUserDetails, HabiticaChatMessage } from "@/services/habiticaApi";
 import { cn } from "@/lib/utils";
 
 export const BuffTimerCard = () => {
-  const threeHoursMs = 10800000;
-  const [nextBuffTime, setNextBuffTime] = useState<Date | null>(null);
-  const [timeRemaining, setTimeRemaining] = useState<string>("");
-  const [canCast, setCanCast] = useState(false);
+  const [buffCount, setBuffCount] = useState<number>(0);
   const [loading, setLoading] = useState(true);
-  const [timeRemainingMs, setTimeRemainingMs] = useState(0);
 
-  const loadBuffTime = async () => {
+  const countBuffsSinceLastAttack = async () => {
     try {
       setLoading(true);
-      const buffTime = await getNextBuffTime();
-      setNextBuffTime(buffTime);
+      const chatMessages = await fetchPartyChat();
+      if (!chatMessages || chatMessages.length === 0) {
+        setBuffCount(0);
+        return;
+      }
+
+      // Get username from cache, fetch if not cached
+      let username = getCachedUsername();
+      if (!username) {
+        const userData = await fetchUserDetails();
+        username = userData?.auth?.local?.username;
+        if (!username) {
+          setBuffCount(0);
+          return;
+        }
+      }
+
+      // Sort messages by timestamp (newest first)
+      const sortedMessages = chatMessages
+        .filter(msg => msg.timestamp)
+        .sort((a, b) => new Date(b.timestamp!).getTime() - new Date(a.timestamp!).getTime());
+
+      const attackPattern = `\`${username} attacks`;
+      const buffPattern = `\`${username} casts Valorous Presence for the party`;
+
+      let totalBuffs = 0;
+      
+      // Count buffs until we hit an attack message
+      for (const message of sortedMessages) {
+        if (!message.text) continue;
+        
+        if (message.text.startsWith(attackPattern)) {
+          // Found an attack, stop counting
+          break;
+        }
+        
+        if (message.text.startsWith(buffPattern)) {
+          // Extract the number from the message like "casts Valorous Presence for the party 5 times"
+          const match = message.text.match(/party (\d+) times/);
+          if (match) {
+            const buffAmount = parseInt(match[1], 10);
+            if (!isNaN(buffAmount)) {
+              totalBuffs += buffAmount;
+            }
+          } else {
+            // messages without "n times" are single buffs
+            totalBuffs++;
+          }
+        }
+      }
+
+      setBuffCount(totalBuffs);
     } catch (error) {
-      console.error("Error loading buff time:", error);
-      setNextBuffTime(null);
+      console.error("Error counting buffs:", error);
+      setBuffCount(0);
     } finally {
       setLoading(false);
     }
   };
 
-  const formatTimeRemaining = (targetTime: Date): string => {
-    const now = new Date();
-    const diff = targetTime.getTime() - now.getTime();
-    setTimeRemainingMs(diff);
-
-    if (diff <= 0) {
-      setCanCast(true);
-      return "Ready to cast!";
-    }
-
-    setCanCast(false);
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-    if (hours > 0) {
-      return `${hours}h ${minutes}m ${seconds}s`;
-    } else if (minutes > 0) {
-      return `${minutes}m ${seconds}s`;
-    } else {
-      return `${seconds}s`;
-    }
-  };
-
   useEffect(() => {
-    loadBuffTime();
+    countBuffsSinceLastAttack();
   }, []);
 
-  useEffect(() => {
-    if (!nextBuffTime) return;
-
-    const interval = setInterval(() => {
-      const remaining = formatTimeRemaining(nextBuffTime);
-      setTimeRemaining(remaining);
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [nextBuffTime]);
+  const maxBuffs = 100;
+  const percentage = (buffCount / maxBuffs) * 100;
 
   if (loading) {
     return (
       <Card className="p-4 bg-card border-border">
         <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <Clock className="h-4 w-4 text-muted-foreground" />
+          <div className="flex justify-between items-center">
             <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-              Next Buff
+              Daily Buffs
             </span>
-          </div>
-          <div className="text-lg font-bold text-muted-foreground">
-            Loading...
-          </div>
-        </div>
-      </Card>
-    );
-  }
-
-  if (!nextBuffTime) {
-    return (
-      <Card className="p-4 bg-card border-border">
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <Clock className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-              Next Buff
+            <span className="text-lg font-bold text-muted-foreground">
+              Loading...
             </span>
-          </div>
-          <div className="text-lg font-bold text-violet-600">
-            Ready to cast!
           </div>
         </div>
       </Card>
@@ -105,16 +100,16 @@ export const BuffTimerCard = () => {
       <div className="space-y-2">
         <div className="flex justify-between items-center">
           <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-            Next Buff
+            Daily Buffs
           </span>
           <span className={cn("text-lg font-bold", "text-violet-600")}>
-            {timeRemaining || "Calculating..."}
+            {buffCount}/{maxBuffs}
           </span>
         </div>
         <div className="h-2 bg-secondary rounded-full overflow-hidden">
           <div
-              className={cn("h-full transition-all duration-500", "bg-gradient-to-r from-violet-600 to-violet-700")}
-              style={{ width: `${Math.min((timeRemainingMs / threeHoursMs) * 100, 100)}%` }}
+            className={cn("h-full transition-all duration-500", "bg-gradient-to-r from-violet-600 to-violet-700")}
+            style={{ width: `${Math.min(percentage, 100)}%` }}
           />
         </div>
       </div>

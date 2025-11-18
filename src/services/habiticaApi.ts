@@ -104,7 +104,7 @@ function setCachedPartyId(id: string | null) {
 const CACHED_USERNAME_KEY = "habitica_cached_username";
 let cachedUsername: string | null = null;
 
-function getCachedUsername(): string | null {
+export function getCachedUsername(): string | null {
   if (cachedUsername) return cachedUsername;
   const v = sessionStorage.getItem(CACHED_USERNAME_KEY);
   cachedUsername = v || null;
@@ -180,46 +180,6 @@ export const fetchPartyChat = async (groupId?: string): Promise<HabiticaChatMess
 };
 
 // Cast Brutal Smash against a cached task id.
-// Get next buff availability time by looking for latest buff cast in chat
-export const getNextBuffTime = async (): Promise<Date | null> => {
-  try {
-    const chatMessages = await fetchPartyChat();
-    if (!chatMessages || chatMessages.length === 0) return null;
-
-    // Get username from cache, fetch if not cached
-    let username = getCachedUsername();
-    if (!username) {
-      const userData = await fetchUserDetails();
-      username = userData?.auth?.local?.username;
-      if (!username) return null;
-    }
-
-    // Find the latest message that starts with "{username} casts"
-    const buffCastPattern = `\`${username} casts`;
-    let latestBuffCast: HabiticaChatMessage | null = null;
-
-    for (const message of chatMessages) {
-      if (message.text?.startsWith(buffCastPattern)) {
-        if (!latestBuffCast || (message.timestamp && latestBuffCast.timestamp && 
-            new Date(message.timestamp) > new Date(latestBuffCast.timestamp))) {
-          latestBuffCast = message;
-        }
-      }
-    }
-
-    if (!latestBuffCast || !latestBuffCast.timestamp) return null;
-
-    // Calculate next buff time (3 hours after the last cast)
-    const lastCastTime = new Date(latestBuffCast.timestamp);
-    const nextBuffTime = new Date(lastCastTime.getTime() + 3 * 60 * 60 * 1000); // 3 hours in milliseconds
-    
-    return nextBuffTime;
-  } catch (error) {
-    console.error('Error getting next buff time:', error);
-    return null;
-  }
-};
-
 export const castBrutalSmash = async (): Promise<{ status: number; size: number; time: number }> => {
   // Helper to ensure we have a target id, using cache when possible
   const resolveTargetId = async (): Promise<string> => {
