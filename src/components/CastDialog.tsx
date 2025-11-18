@@ -29,7 +29,7 @@ export const CastDialog = ({ ability, open, onOpenChange, onCast }: CastDialogPr
   const [iterations, setIterations] = useState(1);
   const [delay, setDelay] = useState(0);
   const [castMode, setCastMode] = useState<"immediate" | "scheduled">("immediate");
-  const [scheduledDate, setScheduledDate] = useState<Date>();
+  const [scheduledDate, setScheduledDate] = useState<Date>(new Date());
   const [scheduledTime, setScheduledTime] = useState("12:00");
 
   const handleCast = () => {
@@ -53,7 +53,7 @@ export const CastDialog = ({ ability, open, onOpenChange, onCast }: CastDialogPr
     setIterations(1);
     setDelay(0);
     setCastMode("immediate");
-    setScheduledDate(undefined);
+    setScheduledDate(new Date());
     setScheduledTime("12:00");
   };
 
