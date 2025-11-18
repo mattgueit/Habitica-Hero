@@ -30,7 +30,7 @@ export const ScheduledCasts = ({ scheduledCasts, onCancel }: ScheduledCastsProps
               <div>
                 <p className="font-medium">{cast.ability.name}</p>
                 <p className="text-sm text-muted-foreground">
-                  {format(cast.scheduledTime, "PPP 'at' p")} • {cast.iterations}x • {cast.delay}ms delay
+                  {format(cast.scheduledTime, "PPP 'at' p")} • {cast.iterations}x
                 </p>
               </div>
             </div>

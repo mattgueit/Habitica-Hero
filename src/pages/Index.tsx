@@ -156,10 +156,6 @@ const Index = () => {
 
         newResponses.unshift(response);
         setResponses([...newResponses]);
-
-        if (i < scheduledCast.iterations - 1) {
-          await new Promise((resolve) => setTimeout(resolve, scheduledCast.delay));
-        }
       }
 
       toast({
@@ -193,7 +189,7 @@ const Index = () => {
     }
   };
 
-  const handleCast = async (iterations: number, delay: number, scheduledTime?: Date) => {
+  const handleCast = async (iterations: number, scheduledTime?: Date) => {
     if (!selectedAbility) return;
 
     // If scheduled, create a scheduled cast
@@ -202,7 +198,6 @@ const Index = () => {
         id: `scheduled-${Date.now()}`,
         ability: selectedAbility,
         iterations,
-        delay,
         scheduledTime,
         status: "pending",
       };
@@ -238,10 +233,6 @@ const Index = () => {
 
         newResponses.unshift(response);
         setResponses([...newResponses]);
-
-        if (i < iterations - 1) {
-          await new Promise(resolve => setTimeout(resolve, delay));
-        }
       }
 
       toast({

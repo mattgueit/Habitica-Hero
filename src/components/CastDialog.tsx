@@ -22,12 +22,11 @@ interface CastDialogProps {
   ability: AbilityConfig | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onCast: (iterations: number, delay: number, scheduledTime?: Date) => void;
+  onCast: (iterations: number, scheduledTime?: Date) => void;
 }
 
 export const CastDialog = ({ ability, open, onOpenChange, onCast }: CastDialogProps) => {
   const [iterations, setIterations] = useState(1);
-  const [delay, setDelay] = useState(0);
   const [castMode, setCastMode] = useState<"immediate" | "scheduled">("immediate");
   const [scheduledDate, setScheduledDate] = useState<Date>(new Date());
   const [scheduledTime, setScheduledTime] = useState("12:00");
@@ -39,8 +38,7 @@ export const CastDialog = ({ ability, open, onOpenChange, onCast }: CastDialogPr
       ability.minIterations,
       Math.min(ability.maxIterations, iterations)
     );
-    const validDelay = Math.max(0, Math.min(10000, delay));
-    
+
     let scheduledDateTime: Date | undefined;
     if (castMode === "scheduled" && scheduledDate) {
       const [hours, minutes] = scheduledTime.split(":").map(Number);
@@ -48,10 +46,9 @@ export const CastDialog = ({ ability, open, onOpenChange, onCast }: CastDialogPr
       scheduledDateTime.setHours(hours, minutes, 0, 0);
     }
     
-    onCast(validIterations, validDelay, scheduledDateTime);
+    onCast(validIterations, scheduledDateTime);
     onOpenChange(false);
     setIterations(1);
-    setDelay(0);
     setCastMode("immediate");
     setScheduledDate(new Date());
     setScheduledTime("12:00");
@@ -149,18 +146,6 @@ export const CastDialog = ({ ability, open, onOpenChange, onCast }: CastDialogPr
               max={ability.maxIterations}
               value={iterations}
               onChange={(e) => setIterations(parseInt(e.target.value) || 1)}
-              className="[&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="delay">Delay (ms, 0-10000)</Label>
-            <Input
-              id="delay"
-              type="number"
-              min={0}
-              max={10000}
-              value={delay}
-              onChange={(e) => setDelay(parseInt(e.target.value) || 0)}
               className="[&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]"
             />
           </div>

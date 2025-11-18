@@ -56,7 +56,6 @@ export interface ScheduledCast {
   id: string;
   ability: AbilityConfig;
   iterations: number;
-  delay: number;
   scheduledTime: Date;
   status: 'pending' | 'executing' | 'completed' | 'failed';
 }
