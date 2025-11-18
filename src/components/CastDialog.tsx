@@ -57,11 +57,18 @@ export const CastDialog = ({ ability, open, onOpenChange, onCast }: CastDialogPr
     setScheduledTime("12:00");
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleCast();
+    }
+  };
+
   if (!ability) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md" onKeyDown={handleKeyDown}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <img src={ability.icon} alt={ability.name} className="w-10 h-10 object-contain" />
