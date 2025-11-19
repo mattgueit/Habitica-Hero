@@ -17,15 +17,17 @@ import { CalendarIcon, Clock } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { AbilityConfig } from "@/types/habitica";
+import {toast} from "@/hooks/use-toast.ts";
 
 interface CastDialogProps {
   ability: AbilityConfig | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onCast: (iterations: number, scheduledTime?: Date) => void;
+  remainingDailyBuffs: number;
 }
 
-export const CastDialog = ({ ability, open, onOpenChange, onCast }: CastDialogProps) => {
+export const CastDialog = ({ ability, open, onOpenChange, onCast, remainingDailyBuffs }: CastDialogProps) => {
   const [iterations, setIterations] = useState(1);
   const [castMode, setCastMode] = useState<"immediate" | "scheduled">("immediate");
   const [scheduledDate, setScheduledDate] = useState<Date>(new Date());
@@ -33,6 +35,16 @@ export const CastDialog = ({ ability, open, onOpenChange, onCast }: CastDialogPr
 
   const handleCast = () => {
     if (!ability) return;
+
+    if (iterations > remainingDailyBuffs && castMode === "immediate" && ability.type != "attack") {
+      toast({
+        title: "Max daily  buffs reached",
+        description: "You have reached your daily buff limit.",
+        variant: "destructive",
+      });
+
+      return;
+    }
 
     const validIterations = Math.max(
       ability.minIterations,

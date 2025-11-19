@@ -15,6 +15,8 @@ import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 
+const MAX_DAILY_BUFFS = 100;
+
 // Define available abilities with their API endpoints (stubs)
 const ABILITIES: AbilityConfig[] = [
   {
@@ -441,7 +443,7 @@ const Index = () => {
           <StatCard
             label="Daily Buffs"
             value={buffLoading ? 0 : buffCount}
-            maxValue={100}
+            maxValue={MAX_DAILY_BUFFS}
             variant="buff"
           />
         </div>
@@ -473,7 +475,7 @@ const Index = () => {
                   </Badge>
                   {getQuestData(userData.party.quest.key)?.boss_HP > 0 ? (
                     <span className="text-sm text-muted-foreground">
-                      HP: {bossRemainingHP !== null ? bossRemainingHP.toFixed(1) : '?'} / {getQuestData(userData.party.quest.key)?.boss_HP}
+                      HP: {bossRemainingHP !== null ? Math.round(bossRemainingHP) : '?'} / {getQuestData(userData.party.quest.key)?.boss_HP}
                     </span>
                   ) : null}
                   {getQuestData(userData.party.quest.key)?.type == "boss" && (
@@ -522,6 +524,7 @@ const Index = () => {
           open={dialogOpen}
           onOpenChange={setDialogOpen}
           onCast={handleCast}
+          remainingDailyBuffs={MAX_DAILY_BUFFS - buffCount}
         />
       </div>
     </div>
