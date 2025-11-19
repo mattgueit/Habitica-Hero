@@ -66,6 +66,7 @@ const Index = () => {
   const [scheduledCasts, setScheduledCasts] = useState<ScheduledCast[]>([]);
   const [buffCount, setBuffCount] = useState<number>(0);
   const [buffLoading, setBuffLoading] = useState(true);
+  const [bossRemainingHP, setBossRemainingHP] = useState<number | null>(null);
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -73,7 +74,6 @@ const Index = () => {
       return;
     }
     loadUserData();
-    countBuffsSinceLastAttack();
   }, []);
 
   // Check scheduled casts every second
@@ -98,6 +98,8 @@ const Index = () => {
     try {
       const data = await fetchUserDetails();
       setUserData(data);
+      // Calculate buffs and boss HP with the loaded user data
+      await countBuffsSinceLastAttack(data);
     } catch (error) {
       toast({
         title: "Error loading user data",
@@ -109,12 +111,13 @@ const Index = () => {
     }
   };
 
-  const countBuffsSinceLastAttack = async () => {
+  const countBuffsSinceLastAttack = async (currentUserData?: HabiticaUser) => {
     try {
       setBuffLoading(true);
       const chatMessages = await fetchPartyChat();
       if (!chatMessages || chatMessages.length === 0) {
         setBuffCount(0);
+        setBossRemainingHP(null);
         return;
       }
 
@@ -125,6 +128,7 @@ const Index = () => {
         username = userData?.auth?.local?.username;
         if (!username) {
           setBuffCount(0);
+          setBossRemainingHP(null);
           return;
         }
       }
@@ -134,21 +138,46 @@ const Index = () => {
         .filter(msg => msg.timestamp)
         .sort((a, b) => new Date(b.timestamp!).getTime() - new Date(a.timestamp!).getTime());
 
-      const attackPattern = `\`${username} attacks`;
-      const buffPattern = `\`${username} casts Valorous Presence for the party`;
+      const currentUserAttackPattern = `\`${username} attacks`;
+      const currentUserBuffPattern = `\`${username} casts Valorous Presence for the party`;
+      
+      // Pattern for boss damage: "{username} attacks {bossname} for {n} damage"
+      const bossDamagePattern = /`(.+?) attacks (.+?) for ([\d.]+) damage/;
+      // Pattern for quest start: "Your quest, {quest name with spaces}, has started."
+      const questStartPattern = /Your quest, .+, has started\./;
 
       let totalBuffs = 0;
-      
-      // Count buffs until we hit an attack message
+      let totalBossDamage = 0;
+      let questStartFound = false;
+      let currentUserAttackFound = false;
+
+      // Process messages from newest to oldest
       for (const message of sortedMessages) {
         if (!message.text) continue;
         
-        if (message.text.startsWith(attackPattern)) {
-          // Found an attack, stop counting
-          break;
+        // Stop counting if we hit a quest start message
+        if (questStartPattern.test(message.text)) {
+          questStartFound = true;
         }
         
-        if (message.text.startsWith(buffPattern)) {
+        // Count boss damage from any party member
+        if (!questStartFound) {
+          const bossDamageMatch = message.text.match(bossDamagePattern);
+          if (bossDamageMatch) {
+            const damage = parseFloat(bossDamageMatch[3]);
+            if (!isNaN(damage)) {
+              totalBossDamage += damage;
+            }
+          }
+        }
+
+        // Count buffs until we hit an attack message from this user
+        if (message.text.startsWith(currentUserAttackPattern)) {
+          // Found an attack from this user, stop counting buffs
+          currentUserAttackFound = true;
+        }
+        
+        if (!currentUserAttackFound && message.text.startsWith(currentUserBuffPattern)) {
           // Extract the number from the message like "casts Valorous Presence for the party 5 times"
           const match = message.text.match(/party (\d+) times/);
           if (match) {
@@ -161,12 +190,30 @@ const Index = () => {
             totalBuffs++;
           }
         }
+
+        if (currentUserAttackFound && questStartFound) {
+          break;
+        }
       }
 
       setBuffCount(totalBuffs);
+      
+      // Calculate remaining HP if we have current quest data
+      if (currentUserData?.party?.quest?.key) {
+        const questData = getQuestData(currentUserData.party.quest.key);
+        if (questData && questData.boss_HP > 0) {
+          const remainingHP = Math.max(0, questData.boss_HP - totalBossDamage);
+          setBossRemainingHP(remainingHP);
+        } else {
+          setBossRemainingHP(null);
+        }
+      } else {
+        setBossRemainingHP(null);
+      }
     } catch (error) {
       console.error("Error counting buffs:", error);
       setBuffCount(0);
+      setBossRemainingHP(null);
     } finally {
       setBuffLoading(false);
     }
@@ -426,7 +473,7 @@ const Index = () => {
                   </Badge>
                   {getQuestData(userData.party.quest.key)?.boss_HP > 0 ? (
                     <span className="text-sm text-muted-foreground">
-                      Total HP: {getQuestData(userData.party.quest.key)?.boss_HP}
+                      HP: {bossRemainingHP !== null ? bossRemainingHP.toFixed(1) : '?'} / {getQuestData(userData.party.quest.key)?.boss_HP}
                     </span>
                   ) : null}
                   {getQuestData(userData.party.quest.key)?.type == "boss" && (
