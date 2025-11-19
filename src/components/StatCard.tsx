@@ -5,7 +5,7 @@ interface StatCardProps {
   label: string;
   value: number;
   maxValue?: number;
-  variant: 'hp' | 'exp' | 'mana' | 'quest';
+  variant: 'hp' | 'exp' | 'mana' | 'quest' | 'buff';
   showProgress?: boolean;
 }
 
@@ -17,6 +17,7 @@ export const StatCard = ({ label, value, maxValue, variant, showProgress = true 
     exp: 'bg-gradient-to-r from-exp to-yellow-600',
     mana: 'bg-gradient-to-r from-mana to-blue-700',
     quest: 'bg-gradient-to-r from-quest to-green-700',
+    buff: 'bg-gradient-to-r from-violet-600 to-violet-700',
   };
 
   const textColorClasses = {
@@ -24,6 +25,7 @@ export const StatCard = ({ label, value, maxValue, variant, showProgress = true 
     exp: 'text-exp',
     mana: 'text-mana',
     quest: 'text-quest',
+    buff: 'text-violet-600',
   };
 
   return (

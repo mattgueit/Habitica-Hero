@@ -3,14 +3,13 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
 import { StatCard } from "@/components/StatCard";
-import { BuffTimerCard } from "@/components/BuffTimerCard";
 import { AbilityButton } from "@/components/AbilityButton";
 import { CastDialog } from "@/components/CastDialog";
 import { ResponseLog } from "@/components/ResponseLog";
 import { ScheduledCasts } from "@/components/ScheduledCasts";
 import { Badge } from "@/components/ui/badge";
 import { HabiticaUser, AbilityConfig, CastResponse, ScheduledCast } from "@/types/habitica";
-import { fetchUserDetails, castAbility, isAuthenticated, logout, castBrutalSmash } from "@/services/habiticaApi";
+import { fetchPartyChat, getCachedUsername, fetchUserDetails, castAbility, isAuthenticated, logout, castBrutalSmash } from "@/services/habiticaApi";
 import { getQuestData } from "@/lib/questData";
 import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
@@ -65,6 +64,8 @@ const Index = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [responses, setResponses] = useState<CastResponse[]>([]);
   const [scheduledCasts, setScheduledCasts] = useState<ScheduledCast[]>([]);
+  const [buffCount, setBuffCount] = useState<number>(0);
+  const [buffLoading, setBuffLoading] = useState(true);
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -72,6 +73,7 @@ const Index = () => {
       return;
     }
     loadUserData();
+    countBuffsSinceLastAttack();
   }, []);
 
   // Check scheduled casts every second
@@ -104,6 +106,69 @@ const Index = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const countBuffsSinceLastAttack = async () => {
+    try {
+      setBuffLoading(true);
+      const chatMessages = await fetchPartyChat();
+      if (!chatMessages || chatMessages.length === 0) {
+        setBuffCount(0);
+        return;
+      }
+
+      // Get username from cache, fetch if not cached
+      let username = getCachedUsername();
+      if (!username) {
+        const userData = await fetchUserDetails();
+        username = userData?.auth?.local?.username;
+        if (!username) {
+          setBuffCount(0);
+          return;
+        }
+      }
+
+      // Sort messages by timestamp (newest first)
+      const sortedMessages = chatMessages
+        .filter(msg => msg.timestamp)
+        .sort((a, b) => new Date(b.timestamp!).getTime() - new Date(a.timestamp!).getTime());
+
+      const attackPattern = `\`${username} attacks`;
+      const buffPattern = `\`${username} casts Valorous Presence for the party`;
+
+      let totalBuffs = 0;
+      
+      // Count buffs until we hit an attack message
+      for (const message of sortedMessages) {
+        if (!message.text) continue;
+        
+        if (message.text.startsWith(attackPattern)) {
+          // Found an attack, stop counting
+          break;
+        }
+        
+        if (message.text.startsWith(buffPattern)) {
+          // Extract the number from the message like "casts Valorous Presence for the party 5 times"
+          const match = message.text.match(/party (\d+) times/);
+          if (match) {
+            const buffAmount = parseInt(match[1], 10);
+            if (!isNaN(buffAmount)) {
+              totalBuffs += buffAmount;
+            }
+          } else {
+            // messages without "n times" are single buffs
+            totalBuffs++;
+          }
+        }
+      }
+
+      setBuffCount(totalBuffs);
+    } catch (error) {
+      console.error("Error counting buffs:", error);
+      setBuffCount(0);
+    } finally {
+      setBuffLoading(false);
     }
   };
 
@@ -326,7 +391,12 @@ const Index = () => {
             maxValue={userData?.stats.maxMP || 50}
             variant="mana"
           />
-          <BuffTimerCard />
+          <StatCard
+            label="Daily Buffs"
+            value={buffLoading ? 0 : buffCount}
+            maxValue={100}
+            variant="buff"
+          />
         </div>
 
         {/* Current Quest */}
