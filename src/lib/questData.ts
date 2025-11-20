@@ -642,6 +642,12 @@ const QUEST_DATA: Record<string, QuestData> = {
         "type": "boss",
         "boss_HP": 1000,
         "image": "/bosses/windup.png"
+    },
+    "dog": {
+        "name": "Shiberus",
+        "type": "boss",
+        "boss_HP": 600,
+        "image": "/bosses/dog.png"
     }
 };
 
