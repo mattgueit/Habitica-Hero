@@ -503,7 +503,7 @@ const Index = () => {
                 key={ability.id}
                 ability={ability}
                 onClick={() => handleAbilityClick(ability)}
-                disabled={casting || loading}
+                disabled={casting || loading || (ability.type != "attack" && buffCount >= MAX_DAILY_BUFFS)}
               />
             ))}
           </div>
