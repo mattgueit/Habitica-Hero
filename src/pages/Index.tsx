@@ -141,6 +141,7 @@ const Index = () => {
         .sort((a, b) => new Date(b.timestamp!).getTime() - new Date(a.timestamp!).getTime());
 
       const currentUserAttackPattern = `\`${username} attacks`;
+      const currentUserCollectsPattern = `\`${username} found`;
       const currentUserBuffPattern = `\`${username} casts Valorous Presence for the party`;
       
       // Pattern for boss damage: "{username} attacks {bossname} for {n} damage"
@@ -151,7 +152,7 @@ const Index = () => {
       let totalBuffs = 0;
       let totalBossDamage = 0;
       let questStartFound = false;
-      let currentUserAttackFound = false;
+      let currentUserDayStartedFound = false;
 
       // Process messages from newest to oldest
       for (const message of sortedMessages) {
@@ -173,13 +174,13 @@ const Index = () => {
           }
         }
 
-        // Count buffs until we hit an attack message from this user
-        if (message.text.startsWith(currentUserAttackPattern)) {
-          // Found an attack from this user, stop counting buffs
-          currentUserAttackFound = true;
+        // Count buffs until we hit an attack/collect message from this user
+        if (message.text.startsWith(currentUserAttackPattern) || message.text.startsWith(currentUserCollectsPattern)) {
+          // Found an attack/collect from this user, stop counting buffs
+          currentUserDayStartedFound = true;
         }
         
-        if (!currentUserAttackFound && message.text.startsWith(currentUserBuffPattern)) {
+        if (!currentUserDayStartedFound && message.text.startsWith(currentUserBuffPattern)) {
           // Extract the number from the message like "casts Valorous Presence for the party 5 times"
           const match = message.text.match(/party (\d+) times/);
           if (match) {
@@ -193,7 +194,7 @@ const Index = () => {
           }
         }
 
-        if (currentUserAttackFound && questStartFound) {
+        if (currentUserDayStartedFound && questStartFound) {
           break;
         }
       }
