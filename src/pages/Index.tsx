@@ -479,11 +479,9 @@ const Index = () => {
                       HP: {bossRemainingHP !== null ? Math.round(bossRemainingHP) : '?'} / {getQuestData(userData.party.quest.key)?.boss_HP}
                     </span>
                   ) : null}
-                  {getQuestData(userData.party.quest.key)?.type == "boss" && (
-                    <span className="text-sm text-muted-foreground">
-                      Pending Damage: {Math.round(userData.party.quest.progress.up)}
-                    </span>
-                  )}
+                  <span className="text-sm text-muted-foreground">
+                    Pending Damage: {Math.round(userData.party.quest.progress.up)}
+                  </span>
                   {getQuestData(userData.party.quest.key)?.type == "collection" && (
                       <span className="text-sm text-muted-foreground">
                       Collected Items: {userData.party.quest.progress.collectedItems}
