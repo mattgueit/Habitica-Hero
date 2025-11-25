@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, Clock } from "lucide-react";
+import { CalendarIcon, Clock, ChevronUp, ChevronDown } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { AbilityConfig } from "@/types/habitica";
@@ -31,7 +31,51 @@ export const CastDialog = ({ ability, open, onOpenChange, onCast, remainingDaily
   const [iterations, setIterations] = useState(1);
   const [castMode, setCastMode] = useState<"immediate" | "scheduled">("immediate");
   const [scheduledDate, setScheduledDate] = useState<Date>(new Date());
-  const [scheduledTime, setScheduledTime] = useState("12:00");
+  const [scheduledTime, setScheduledTime] = useState("09:14");
+
+  // Set scheduled time to current local time when dialog opens
+  useEffect(() => {
+    if (open) {
+      const now = new Date();
+      const currentTime = now.toLocaleTimeString('en-GB', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: false 
+      });
+      setScheduledTime(currentTime);
+    }
+  }, [open]);
+
+  const incrementTime = () => {
+    const [hours, minutes] = scheduledTime.split(":").map(Number);
+    let newMinutes = minutes + 1;
+    let newHours = hours;
+    
+    if (newMinutes >= 60) {
+      newMinutes = 0;
+      newHours = (newHours + 1) % 24;
+    }
+    
+    const newTime = `${newHours.toString().padStart(2, '0')}:${newMinutes.toString().padStart(2, '0')}`;
+    setScheduledTime(newTime);
+  };
+
+  const decrementTime = () => {
+    const [hours, minutes] = scheduledTime.split(":").map(Number);
+    let newMinutes = minutes - 1;
+    let newHours = hours;
+    
+    if (newMinutes < 0) {
+      newMinutes = 59;
+      newHours = newHours - 1;
+      if (newHours < 0) {
+        newHours = 23;
+      }
+    }
+    
+    const newTime = `${newHours.toString().padStart(2, '0')}:${newMinutes.toString().padStart(2, '0')}`;
+    setScheduledTime(newTime);
+  };
 
   const handleCast = () => {
     if (!ability) return;
@@ -63,7 +107,13 @@ export const CastDialog = ({ ability, open, onOpenChange, onCast, remainingDaily
     setIterations(1);
     setCastMode("immediate");
     setScheduledDate(new Date());
-    setScheduledTime("12:00");
+    const now = new Date();
+    const currentTime = now.toLocaleTimeString('en-GB', { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      hour12: false 
+    });
+    setScheduledTime(currentTime);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -136,12 +186,35 @@ export const CastDialog = ({ ability, open, onOpenChange, onCast, remainingDaily
                 <Label htmlFor="time">Scheduled Time</Label>
                 <div className="flex items-center gap-2">
                   <Clock className="h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="time"
-                    type="time"
-                    value={scheduledTime}
-                    onChange={(e) => setScheduledTime(e.target.value)}
-                  />
+                  <div className="flex items-center">
+                    <Input
+                      id="time"
+                      type="time"
+                      value={scheduledTime}
+                      onChange={(e) => setScheduledTime(e.target.value)}
+                      className="rounded-r-none"
+                    />
+                    <div className="flex flex-col border border-l-0 rounded-r-md">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="h-[19px] px-2 rounded-none rounded-tr-md border-b"
+                        onClick={incrementTime}
+                      >
+                        <ChevronUp className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="h-[19px] px-2 rounded-none rounded-br-md"
+                        onClick={decrementTime}
+                      >
+                        <ChevronDown className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </>
