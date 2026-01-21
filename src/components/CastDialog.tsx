@@ -80,16 +80,6 @@ export const CastDialog = ({ ability, open, onOpenChange, onCast, remainingDaily
   const handleCast = () => {
     if (!ability) return;
 
-    if (iterations > remainingDailyBuffs && castMode === "immediate" && ability.type != "attack") {
-      toast({
-        title: "Max daily  buffs reached",
-        description: "You have reached your daily buff limit.",
-        variant: "destructive",
-      });
-
-      return;
-    }
-
     const validIterations = Math.max(
       ability.minIterations,
       Math.min(ability.maxIterations, iterations)
