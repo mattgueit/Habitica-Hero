@@ -9,7 +9,7 @@ import { ResponseLog } from "@/components/ResponseLog";
 import { ScheduledCasts } from "@/components/ScheduledCasts";
 import { Badge } from "@/components/ui/badge";
 import { HabiticaUser, AbilityConfig, CastResponse, ScheduledCast } from "@/types/habitica";
-import { fetchPartyChat, getCachedUsername, fetchUserDetails, castAbility, isAuthenticated, logout, castBrutalSmash } from "@/services/habiticaApi";
+import { fetchPartyChat, getCachedUsername, fetchUserDetails, castAbility, isAuthenticated, logout, castAttack } from "@/services/habiticaApi";
 import { getQuestData } from "@/lib/questData";
 import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
@@ -17,8 +17,8 @@ import { useNavigate } from "react-router-dom";
 
 const MAX_DAILY_BUFFS = 100;
 
-// Define available abilities with their API endpoints (stubs)
-const ABILITIES: AbilityConfig[] = [
+// Define available abilities for each class
+const WARRIOR_ABILITIES: AbilityConfig[] = [
   {
     id: "brutalSmash",
     name: "Brutal Smash",
@@ -52,6 +52,45 @@ const ABILITIES: AbilityConfig[] = [
     type: "special",
     icon: "/skills/intimidatingGaze.png",
     endpoint: "/user/class/cast/intimidate",
+    minIterations: 1,
+    maxIterations: 20,
+  },
+];
+
+const WIZARD_ABILITIES: AbilityConfig[] = [
+  {
+    id: "burstOfFlames",
+    name: "Burst of Flames",
+    type: "attack",
+    icon: "/skills/burstOfFlames.png",
+    endpoint: "/user/class/cast/fireball",
+    minIterations: 1,
+    maxIterations: 20,
+  },
+  {
+    id: "etherealSurge",
+    name: "Ethereal Surge",
+    type: "heal",
+    icon: "/skills/etherealSurge.png",
+    endpoint: "/user/class/cast/mpheal",
+    minIterations: 1,
+    maxIterations: 20,
+  },
+  {
+    id: "earthquake",
+    name: "Earthquake",
+    type: "buff",
+    icon: "/skills/earthquake.png",
+    endpoint: "/user/class/cast/earth",
+    minIterations: 1,
+    maxIterations: 20,
+  },
+  {
+    id: "chillingFrost",
+    name: "Chilling Frost",
+    type: "special",
+    icon: "/skills/chillingFrost.png",
+    endpoint: "/user/class/cast/frost",
     minIterations: 1,
     maxIterations: 20,
   },
@@ -251,7 +290,7 @@ const Index = () => {
       let failedCasts = 0;
       for (let i = 0; i < scheduledCast.iterations; i++) {
         const result = scheduledCast.ability.id === "brutalSmash"
-          ? await castBrutalSmash()
+          ? await castAttack(scheduledCast.ability.endpoint)
           : await castAbility(scheduledCast.ability.endpoint);
 
         const response: CastResponse = {
@@ -333,8 +372,8 @@ const Index = () => {
 
     try {
       for (let i = 0; i < iterations; i++) {
-        const result = selectedAbility.id === "brutalSmash"
-          ? await castBrutalSmash()
+        const result = selectedAbility.type === "attack"
+          ? await castAttack(selectedAbility.endpoint)
           : await castAbility(selectedAbility.endpoint);
         
         const response: CastResponse = {
@@ -367,6 +406,8 @@ const Index = () => {
       setCasting(false);
     }
   };
+
+  const currentAbilities = userData?.stats.class === "wizard" ? WIZARD_ABILITIES : WARRIOR_ABILITIES;
 
   return (
     <div className="min-h-screen bg-background p-6">
@@ -497,7 +538,7 @@ const Index = () => {
         <div>
           <h2 className="text-xl font-bold mb-4">Cast Abilities</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {ABILITIES.map((ability) => (
+            {currentAbilities.map((ability) => (
               <AbilityButton
                 key={ability.id}
                 ability={ability}

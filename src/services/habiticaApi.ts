@@ -179,15 +179,15 @@ export const fetchPartyChat = async (groupId?: string): Promise<HabiticaChatMess
   return (data.data || []) as HabiticaChatMessage[];
 };
 
-// Cast Brutal Smash against a cached task id.
-export const castBrutalSmash = async (): Promise<{ status: number; size: number; time: number }> => {
+// Cast attack against a cached task id.
+export const castAttack = async (endpoint: string): Promise<{ status: number; size: number; time: number }> => {
   // Helper to ensure we have a target id, using cache when possible
   const resolveTargetId = async (): Promise<string> => {
     const cached = getCachedTaskId();
     if (cached) return cached;
     const tasks = await fetchTasks();
     if (!tasks || tasks.length === 0) {
-      throw new Error("No tasks available to target with Brutal Smash");
+      throw new Error("No tasks available to target with attack");
     }
     const id = tasks[0].id;
     setCachedTaskId(id);
@@ -197,7 +197,7 @@ export const castBrutalSmash = async (): Promise<{ status: number; size: number;
   // Attempt cast, invalidates cache and retries once if target is invalid
   const attemptCast = async (targetId: string): Promise<{ response: Response; startTime: number; endTime: number; data: string }> => {
     const startTime = performance.now();
-    const url = `${HABITICA_API_BASE}/user/class/cast/smash?targetId=${encodeURIComponent(targetId)}`;
+    const url = `${HABITICA_API_BASE}${endpoint}?targetId=${encodeURIComponent(targetId)}`;
     const response = await fetch(url, { method: 'POST', headers: buildHeaders() });
     const endTime = performance.now();
     const data = await response.text();
