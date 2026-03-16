@@ -28,7 +28,7 @@ interface CastDialogProps {
 }
 
 export const CastDialog = ({ ability, open, onOpenChange, onCast, remainingDailyBuffs }: CastDialogProps) => {
-  const [iterations, setIterations] = useState(1);
+  const [iterations, setIterations] = useState("1");
   const [castMode, setCastMode] = useState<"immediate" | "scheduled">("immediate");
   const [scheduledDate, setScheduledDate] = useState<Date>(new Date());
   const [scheduledTime, setScheduledTime] = useState("09:14");
@@ -80,9 +80,15 @@ export const CastDialog = ({ ability, open, onOpenChange, onCast, remainingDaily
   const handleCast = () => {
     if (!ability) return;
 
+    const parsedIterations = parseInt(iterations);
+    if (Number.isNaN(parsedIterations)) {
+      toast({ title: "Invalid iterations", description: "Iterations must be a positive number" });
+      return;
+    }
+
     const validIterations = Math.max(
       ability.minIterations,
-      Math.min(ability.maxIterations, iterations)
+      Math.min(ability.maxIterations, parsedIterations)
     );
 
     let scheduledDateTime: Date | undefined;
@@ -94,7 +100,7 @@ export const CastDialog = ({ ability, open, onOpenChange, onCast, remainingDaily
     
     onCast(validIterations, scheduledDateTime);
     onOpenChange(false);
-    setIterations(1);
+    setIterations("1");
     setCastMode("immediate");
     setScheduledDate(new Date());
     const now = new Date();
@@ -220,7 +226,7 @@ export const CastDialog = ({ ability, open, onOpenChange, onCast, remainingDaily
               min={ability.minIterations}
               max={ability.maxIterations}
               value={iterations}
-              onChange={(e) => setIterations(parseInt(e.target.value) || 1)}
+              onChange={(e) => setIterations(e.target.value)}
               className="[&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]"
             />
           </div>
