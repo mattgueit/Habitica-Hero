@@ -1,4 +1,4 @@
-import { HabiticaUser } from "@/types/habitica";
+import {HabiticaUser, Task} from "@/types/habitica";
 
 const HABITICA_API_BASE = "https://habitica.com/api/v3";
 
@@ -145,13 +145,13 @@ export const castAbility = async (endpoint: string): Promise<{ status: number; s
   };
 };
 
-export const fetchTasks = async (): Promise<Array<{ id: string }>> => {
+export const fetchTasks = async (): Promise<Task[]> => {
   const url = `${HABITICA_API_BASE}/tasks/user`;
   const response = await fetch(url, { headers: buildHeaders() });
   if (!response.ok) throw new Error(`API error: ${response.status}`);
   const data = await response.json();
-  // Only need IDs for now.
-  return (data.data || []).map((t: { id: string }) => ({ id: t.id }));
+  console.log('tasks', (data.data || []) as Task[]);
+  return (data.data || []) as Task[];
 };
 
 // Fetch user, cache and return party id

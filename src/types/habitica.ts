@@ -33,7 +33,6 @@ export interface QuestData {
   image: string;
 }
 
-
 export interface AbilityConfig {
   id: string;
   name: string;
@@ -59,4 +58,29 @@ export interface ScheduledCast {
   iterations: number;
   scheduledTime: Date;
   status: 'pending' | 'executing' | 'completed' | 'failed';
+}
+
+export interface Task {
+  id: string;
+  type: 'habit' | 'daily' | 'todo';
+  text: string;
+  completed: boolean;
+  checklist: Checklist[];
+  frequency: 'daily' | 'weekly';
+  repeat?: Week;
+}
+
+export interface Week {
+  m: boolean,
+  t: boolean,
+  w: boolean,
+  th: boolean,
+  f: boolean,
+  su: boolean
+}
+
+export interface Checklist {
+  id: string;
+  text: string;
+  completed: boolean;
 }
