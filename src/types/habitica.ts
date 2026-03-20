@@ -76,9 +76,11 @@ export interface Week {
   w: boolean,
   th: boolean,
   f: boolean,
+  s: boolean,
   su: boolean
 }
 
+// ignoring for now because checking list items on dailies don't increase rewards.
 export interface Checklist {
   id: string;
   text: string;

@@ -1,15 +1,17 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Trash2, Square } from "lucide-react";
 import { CastResponse } from "@/types/habitica";
 import { cn } from "@/lib/utils";
 
 interface ResponseLogProps {
   responses: CastResponse[];
   onClear: () => void;
+  casting?: boolean;
+  onStop?: () => void;
 }
 
-export const ResponseLog = ({ responses, onClear }: ResponseLogProps) => {
+export const ResponseLog = ({ responses, onClear, casting, onStop }: ResponseLogProps) => {
   const getStatusColor = (code: number) => {
     if (code >= 200 && code < 300) return "text-green-500";
     if (code >= 400 && code < 500) return "text-yellow-500";
@@ -22,10 +24,18 @@ export const ResponseLog = ({ responses, onClear }: ResponseLogProps) => {
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-semibold">HTTP Response Log</h3>
         {responses.length > 0 && (
-          <Button variant="ghost" size="sm" onClick={onClear}>
-            <Trash2 className="h-4 w-4 mr-2" />
-            Clear
-          </Button>
+          <div className="flex items-center gap-2">
+            {casting && onStop && (
+              <Button variant="ghost" size="sm" onClick={onStop} className="text-red-500 hover:text-red-600">
+                <Square className="h-4 w-4 mr-2" />
+                Stop
+              </Button>
+            )}
+            <Button variant="ghost" size="sm" onClick={onClear}>
+              <Trash2 className="h-4 w-4 mr-2" />
+              Clear
+            </Button>
+          </div>
         )}
       </div>
       <div className="space-y-1 font-mono text-sm max-h-64 overflow-y-auto">

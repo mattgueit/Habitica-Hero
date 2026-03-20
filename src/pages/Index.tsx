@@ -1,13 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, Square } from "lucide-react";
 import { StatCard } from "@/components/StatCard";
 import { AbilityButton } from "@/components/AbilityButton";
 import { CastDialog } from "@/components/CastDialog";
 import { ResponseLog } from "@/components/ResponseLog";
 import { ScheduledCasts } from "@/components/ScheduledCasts";
+import { TaskList } from "@/components/TaskList";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { HabiticaUser, AbilityConfig, CastResponse, ScheduledCast } from "@/types/habitica";
 import { fetchPartyChat, getCachedUsername, fetchUserDetails, castAbility, isAuthenticated, logout, castAttack } from "@/services/habiticaApi";
 import { getQuestData } from "@/lib/questData";
@@ -108,6 +110,7 @@ const Index = () => {
   const [buffCount, setBuffCount] = useState<number>(0);
   const [buffLoading, setBuffLoading] = useState(true);
   const [bossRemainingHP, setBossRemainingHP] = useState<number | null>(null);
+  const stopCastingRef = useRef(false);
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -283,12 +286,14 @@ const Index = () => {
     );
 
     setCasting(true);
+    stopCastingRef.current = false;
     const newResponses: CastResponse[] = [];
 
     try {
       let successfulCasts = 0;
       let failedCasts = 0;
       for (let i = 0; i < scheduledCast.iterations; i++) {
+        if (stopCastingRef.current) break;
         const result = scheduledCast.ability.id === "brutalSmash"
           ? await castAttack(scheduledCast.ability.endpoint)
           : await castAbility(scheduledCast.ability.endpoint);
@@ -368,10 +373,13 @@ const Index = () => {
 
     // Otherwise, execute immediately
     setCasting(true);
+    stopCastingRef.current = false;
     const newResponses: CastResponse[] = responses;
 
     try {
+      let actualIterations = 0;
       for (let i = 0; i < iterations; i++) {
+        if (stopCastingRef.current) break;
         const result = selectedAbility.type === "attack"
           ? await castAttack(selectedAbility.endpoint)
           : await castAbility(selectedAbility.endpoint);
@@ -387,11 +395,12 @@ const Index = () => {
 
         newResponses.unshift(response);
         setResponses([...newResponses]);
+        actualIterations++;
       }
 
       toast({
         title: "Cast complete!",
-        description: `Successfully cast ${selectedAbility.name} ${iterations} time(s)`,
+        description: `Successfully cast ${selectedAbility.name} ${actualIterations} time(s)`,
       });
 
       // Refresh user data after all casts complete
@@ -534,38 +543,59 @@ const Index = () => {
           </Card>
         )}
 
-        {/* Abilities */}
-        <div>
-          <h2 className="text-xl font-bold mb-4">Cast Abilities</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {currentAbilities.map((ability) => (
-              <AbilityButton
-                key={ability.id}
-                ability={ability}
-                onClick={() => handleAbilityClick(ability)}
-                disabled={casting || loading}
-              />
-            ))}
+        {/* Tabs for Buffs and Tasks */}
+        <Tabs defaultValue="buffs">
+          <div className="flex justify-center">
+            <TabsList className="w-64">
+              <TabsTrigger value="buffs" className="flex-1">Buffs</TabsTrigger>
+              <TabsTrigger value="tasks" className="flex-1">Tasks</TabsTrigger>
+            </TabsList>
           </div>
-        </div>
 
-        {/* Scheduled Casts */}
-        <ScheduledCasts
-          scheduledCasts={scheduledCasts}
-          onCancel={handleCancelScheduled}
-        />
+          <TabsContent value="buffs" className="space-y-6">
+            {/* Abilities */}
+            <div>
+              <h2 className="text-xl font-bold mb-4">Cast Abilities</h2>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {currentAbilities.map((ability) => (
+                  <AbilityButton
+                    key={ability.id}
+                    ability={ability}
+                    onClick={() => handleAbilityClick(ability)}
+                    disabled={casting || loading}
+                  />
+                ))}
+              </div>
+            </div>
 
-        {/* Response Log */}
-        <ResponseLog responses={responses} onClear={() => setResponses([])} />
+            {/* Scheduled Casts */}
+            <ScheduledCasts
+              scheduledCasts={scheduledCasts}
+              onCancel={handleCancelScheduled}
+            />
 
-        {/* Cast Dialog */}
-        <CastDialog
-          ability={selectedAbility}
-          open={dialogOpen}
-          onOpenChange={setDialogOpen}
-          onCast={handleCast}
-          remainingDailyBuffs={MAX_DAILY_BUFFS - buffCount}
-        />
+            {/* Response Log */}
+            <ResponseLog
+              responses={responses}
+              onClear={() => setResponses([])}
+              casting={casting}
+              onStop={() => { stopCastingRef.current = true; }}
+            />
+
+            {/* Cast Dialog */}
+            <CastDialog
+              ability={selectedAbility}
+              open={dialogOpen}
+              onOpenChange={setDialogOpen}
+              onCast={handleCast}
+              remainingDailyBuffs={MAX_DAILY_BUFFS - buffCount}
+            />
+          </TabsContent>
+
+          <TabsContent value="tasks">
+            <TaskList onTaskScored={loadUserData} />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

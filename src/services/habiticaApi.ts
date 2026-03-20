@@ -154,6 +154,15 @@ export const fetchTasks = async (): Promise<Task[]> => {
   return (data.data || []) as Task[];
 };
 
+export const scoreTask = async (taskId: string): Promise<void> => {
+  const url = `${HABITICA_API_BASE}/tasks/${encodeURIComponent(taskId)}/score/up`;
+  const response = await fetch(url, {
+    method: "POST",
+    headers: buildHeaders(),
+  });
+  if (!response.ok) throw new Error(`API error: ${response.status}`);
+};
+
 // Fetch user, cache and return party id
 export const fetchAndCachePartyId = async (): Promise<string | null> => {
   const cached = getCachedPartyId();
