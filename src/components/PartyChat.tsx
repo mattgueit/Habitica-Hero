@@ -57,7 +57,7 @@ export const PartyChat = () => {
           {msg.uuid !== "system" && msg.user && (
             <p className="font-semibold text-sm">{msg.user}</p>
           )}
-          {msg.text && <p className="text-sm mt-1">{msg.text}</p>}
+          {msg.text && <p className="text-sm mt-1">{msg.text.replace(/^`+|`+$/g, '')}</p>}
           {msg.timestamp && (
             <p className="text-xs text-muted-foreground mt-2">
               {format(new Date(msg.timestamp), "PPP 'at' p")}
