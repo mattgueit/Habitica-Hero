@@ -8,6 +8,7 @@ export type HabiticaChatMessage = {
   text?: string;
   timestamp?: string;
   user?: string;
+  uuid: string;
 };
 
 function getStoredCredentials() {

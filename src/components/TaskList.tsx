@@ -106,7 +106,7 @@ export const TaskList = ({ onTaskScored }: TaskListProps) => {
         return (
           <Card
             key={task.id}
-            className={`p-3 flex items-center gap-3 ${!relevant ? "opacity-50" : ""}`}
+            className={`p-4 flex items-center gap-3 ${!relevant ? "opacity-50" : ""}`}
           >
             <Checkbox
               checked={isCompleted}

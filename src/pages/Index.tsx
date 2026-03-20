@@ -8,6 +8,7 @@ import { CastDialog } from "@/components/CastDialog";
 import { ResponseLog } from "@/components/ResponseLog";
 import { ScheduledCasts } from "@/components/ScheduledCasts";
 import { TaskList } from "@/components/TaskList";
+import { PartyChat } from "@/components/PartyChat";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { HabiticaUser, AbilityConfig, CastResponse, ScheduledCast } from "@/types/habitica";
@@ -543,12 +544,13 @@ const Index = () => {
           </Card>
         )}
 
-        {/* Tabs for Buffs and Tasks */}
+        {/* Tabs for Buffs, Tasks, and Party */}
         <Tabs defaultValue="buffs">
           <div className="flex justify-center">
-            <TabsList className="w-64">
+            <TabsList className="w-96">
               <TabsTrigger value="buffs" className="flex-1">Buffs</TabsTrigger>
               <TabsTrigger value="tasks" className="flex-1">Tasks</TabsTrigger>
+              <TabsTrigger value="party" className="flex-1">Party</TabsTrigger>
             </TabsList>
           </div>
 
@@ -594,6 +596,10 @@ const Index = () => {
 
           <TabsContent value="tasks">
             <TaskList onTaskScored={loadUserData} />
+          </TabsContent>
+
+          <TabsContent value="party">
+            <PartyChat />
           </TabsContent>
         </Tabs>
       </div>
