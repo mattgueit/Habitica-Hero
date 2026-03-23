@@ -547,7 +547,7 @@ const Index = () => {
         {/* Tabs for Buffs, Tasks, and Party */}
         <Tabs defaultValue="buffs">
           <div className="flex justify-center">
-            <TabsList className="w-96">
+            <TabsList className={`w-96 ${loading ? 'blur-sm' : '' }`} >
               <TabsTrigger value="buffs" className="flex-1">Buffs</TabsTrigger>
               <TabsTrigger value="tasks" className="flex-1">Tasks</TabsTrigger>
               <TabsTrigger value="party" className="flex-1">Party</TabsTrigger>
