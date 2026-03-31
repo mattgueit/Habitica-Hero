@@ -185,8 +185,6 @@ const Index = () => {
 
       const currentUserAttackPattern = `\`${username} attacks`;
       const currentUserCollectsPattern = `\`${username} found`;
-      const currentUserBuffPattern = `\`${username} casts Valorous Presence for the party`;
-      
       // Pattern for boss damage: "{username} attacks {bossname} for {n} damage"
       const bossDamagePattern = /`(.+?) attacks (.+?) for ([\d.]+) damage/;
       // Pattern for quest start: "Your quest, {quest name with spaces}, has started."
@@ -222,18 +220,21 @@ const Index = () => {
           // Found an attack/collect from this user, stop counting buffs
           currentUserDayStartedFound = true;
         }
-        
-        if (!currentUserDayStartedFound && message.text.startsWith(currentUserBuffPattern)) {
-          // Extract the number from the message like "casts Valorous Presence for the party 5 times"
-          const match = message.text.match(/party (\d+) times/);
-          if (match) {
-            const buffAmount = parseInt(match[1], 10);
-            if (!isNaN(buffAmount)) {
-              totalBuffs += buffAmount;
+
+        if (!currentUserDayStartedFound) {
+          const buffPatternRegex = new RegExp(`^\`${username.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')} casts .+ for the party`);
+          if (buffPatternRegex.test(message.text)) {
+            // Extract the number from the message like "casts {ability name} for the party 5 times"
+            const match = message.text.match(/party (\d+) times/);
+            if (match) {
+              const buffAmount = parseInt(match[1], 10);
+              if (!isNaN(buffAmount)) {
+                totalBuffs += buffAmount;
+              }
+            } else {
+              // messages without "n times" are single buffs
+              totalBuffs++;
             }
-          } else {
-            // messages without "n times" are single buffs
-            totalBuffs++;
           }
         }
 
