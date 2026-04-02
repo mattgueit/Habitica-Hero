@@ -331,11 +331,11 @@ const QUEST_DATA: Record<string, QuestData> = {
         "boss_HP": 300,
         "image": "/bosses/rooster.png"
     },
-    "cat": {
+    "sabretooth": {
         "name": "The Sabre Cat",
         "type": "boss",
         "boss_HP": 1000,
-        "image": "/bosses/cat.png"
+        "image": "/bosses/sabretooth.png"
     },
     "seaserpent": {
         "name": "Danger in the Depths: Sea Serpent Strike!",
@@ -644,10 +644,70 @@ const QUEST_DATA: Record<string, QuestData> = {
         "image": "/bosses/windup.png"
     },
     "dog": {
-        "name": "Shiberus",
+        "name": "Triple Dog Dare!",
         "type": "boss",
         "boss_HP": 600,
         "image": "/bosses/dog.png"
+    },
+    "otter": {
+        "name": "The Perfidious Plotter!",
+        "type": "boss",
+        "boss_HP": 1200,
+        "image": "/bosses/otter.png"
+    },
+    "jade": {
+        "name": "A Jaded Jinx",
+        "type": "boss",
+        "boss_HP": 400,
+        "image": "/bosses/jade.png"
+    },
+    "alpaca": {
+        "name": "The Overpacked Alpaca",
+        "type": "boss",
+        "boss_HP": 800,
+        "image": "/bosses/alpaca.png"
+    },
+    "cat": {
+        "name": "A Purrplexing Predicament",
+        "type": "boss",
+        "boss_HP": 600,
+        "image": "/bosses/cat.png"
+    },
+    "chameleon": {
+        "name": "The Chaotic Chameleon",
+        "type": "boss",
+        "boss_HP": 400,
+        "image": "/bosses/chameleon.png"
+    },
+    "crab": {
+        "name": "Fiddling Crab",
+        "type": "boss",
+        "boss_HP": 1200,
+        "image": "/bosses/crab.png"
+    },
+    "platypus": {
+        "name": "Perfectionist Platypus",
+        "type": "boss",
+        "boss_HP": 1000,
+        "image": "/bosses/platypus.png"
+    },
+    "raccoon": {
+        "name": "Raccoon Tycoon",
+        "type": "boss",
+        "boss_HP": 800,
+        "image": "/bosses/raccoon.png"
+    },
+    "opal": {
+        "name": "Legend of the Obscure Opals",
+        "type": "collection",
+        "boss_HP": 0,
+        "image": "/bosses/opal.png"
+    },
+    "alien": {
+        "name": "Invasion of the Motivation Snatchers",
+        "type": "boss",
+        "boss_HP": 500,
+        "image": "/bosses/alien.png"
     }
 };
 
