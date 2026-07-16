@@ -8,9 +8,10 @@ import { format } from "date-fns";
 interface ScheduledCastsProps {
   scheduledCasts: ScheduledCast[];
   onCancel: (id: string) => void;
+  onClear: () => void;
 }
 
-export const ScheduledCasts = ({ scheduledCasts, onCancel }: ScheduledCastsProps) => {
+export const ScheduledCasts = ({ scheduledCasts, onCancel, onClear }: ScheduledCastsProps) => {
   if (scheduledCasts.length === 0) return null;
 
     return (
@@ -18,6 +19,10 @@ export const ScheduledCasts = ({ scheduledCasts, onCancel }: ScheduledCastsProps
       <div className="flex items-center gap-2 mb-4">
         <Clock className="h-5 w-5 text-primary" />
         <h2 className="text-lg font-semibold">Scheduled Casts</h2>
+        <Button className="ml-auto" variant="ghost" size="sm" onClick={onClear}>
+          <Trash2 className="h-4 w-4 mr-2" />
+          Clear
+        </Button>
       </div>
       <div className="space-y-2">
         {scheduledCasts.sort((a, b) => +a.scheduledTime - +b.scheduledTime).map((cast) => (

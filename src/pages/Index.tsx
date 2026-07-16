@@ -279,6 +279,14 @@ const Index = () => {
     });
   };
 
+  const handleClearAllScheduled = () => {
+    setScheduledCasts([]);
+    toast({
+      title: "All scheduled casts cleared",
+      description: "All scheduled casts have been removed.",
+    });
+  }
+
   const executeScheduledCast = async (scheduledCast: ScheduledCast) => {
     // Update status to executing
     setScheduledCasts((prev) =>
@@ -575,6 +583,7 @@ const Index = () => {
             <ScheduledCasts
               scheduledCasts={scheduledCasts}
               onCancel={handleCancelScheduled}
+              onClear={handleClearAllScheduled}
             />
 
             {/* Response Log */}
