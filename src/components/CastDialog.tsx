@@ -24,14 +24,16 @@ interface CastDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onCast: (iterations: number, scheduledTime?: Date) => void;
-  remainingDailyBuffs: number;
 }
 
-export const CastDialog = ({ ability, open, onOpenChange, onCast, remainingDailyBuffs }: CastDialogProps) => {
-  const [iterations, setIterations] = useState("1");
-  const [castMode, setCastMode] = useState<"immediate" | "scheduled">("immediate");
+export const CastDialog = ({ ability, open, onOpenChange, onCast }: CastDialogProps) => {
+  const [iterations, setIterations] = useState("20");
+  const [castMode, setCastMode] = useState<"immediate" | "scheduled" | "smartSchedule">("immediate");
   const [scheduledDate, setScheduledDate] = useState<Date>(new Date());
   const [scheduledTime, setScheduledTime] = useState("09:14");
+  const [initialDelay, setInitialDelay] = useState("2");
+  const [recurringDelay, setRecurringDelay] = useState("4");
+  const [recurrences, setRecurrences] = useState("1");
 
   // Set scheduled time to current local time when dialog opens
   useEffect(() => {
@@ -97,10 +99,26 @@ export const CastDialog = ({ ability, open, onOpenChange, onCast, remainingDaily
       scheduledDateTime = new Date(scheduledDate);
       scheduledDateTime.setHours(hours, minutes, 0, 0);
     }
+
+    if (castMode === "smartSchedule") {
+      const parsedRecurrences = parseInt(recurrences);
+      const parsedInitialDelay = parseInt(initialDelay);
+      const parsedRecurringDelay = parseInt(recurringDelay);
+
+
+      for (let i = 0; i < parsedRecurrences; i++) {
+        const smartScheduledDateTime = new Date();
+        smartScheduledDateTime.setHours(smartScheduledDateTime.getHours(), smartScheduledDateTime.getMinutes(), 0, 0);
+        smartScheduledDateTime.setMinutes(smartScheduledDateTime.getMinutes() + parsedInitialDelay);
+        smartScheduledDateTime.setMinutes(smartScheduledDateTime.getMinutes() + (i * parsedRecurringDelay));
+        onCast(validIterations, smartScheduledDateTime);
+      }
+    } else {
+      onCast(validIterations, scheduledDateTime);
+    }
     
-    onCast(validIterations, scheduledDateTime);
     onOpenChange(false);
-    setIterations("1");
+    setIterations("20");
     setCastMode("immediate");
     setScheduledDate(new Date());
     const now = new Date();
@@ -144,6 +162,10 @@ export const CastDialog = ({ ability, open, onOpenChange, onCast, remainingDaily
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="scheduled" id="scheduled" />
                 <Label htmlFor="scheduled" className="font-normal cursor-pointer">Scheduled</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="smartSchedule" id="smartSchedule" />
+                <Label htmlFor="smartSchedule" className="font-normal cursor-pointer">Smart Schedule</Label>
               </div>
             </RadioGroup>
           </div>
@@ -230,6 +252,49 @@ export const CastDialog = ({ ability, open, onOpenChange, onCast, remainingDaily
               className="[&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]"
             />
           </div>
+
+          {castMode == "smartSchedule" && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="initialDelay">
+                    Initial Delay (mins)
+                  </Label>
+                  <Input
+                      id="initialDelay"
+                      type="number"
+                      value={initialDelay}
+                      onChange={(e) => setInitialDelay(e.target.value)}
+                      className="[&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="recurringDelay">
+                    Recurring Delay (mins)
+                  </Label>
+                  <Input
+                      id="recurringDelay"
+                      type="number"
+                      value={recurringDelay}
+                      onChange={(e) => setRecurringDelay(e.target.value)}
+                      className="[&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="recurringDelay">
+                    Recurrences
+                  </Label>
+                  <Input
+                      id="recurrences"
+                      type="number"
+                      value={recurrences}
+                      onChange={(e) => setRecurrences(e.target.value)}
+                      className="[&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]"
+                  />
+                </div>
+              </>
+          )}
         </div>
         <DialogFooter className="flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
           <Button onClick={handleCast}>Cast Ability</Button>

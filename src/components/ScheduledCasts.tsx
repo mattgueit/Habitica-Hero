@@ -13,14 +13,14 @@ interface ScheduledCastsProps {
 export const ScheduledCasts = ({ scheduledCasts, onCancel }: ScheduledCastsProps) => {
   if (scheduledCasts.length === 0) return null;
 
-  return (
+    return (
     <Card className="p-4">
       <div className="flex items-center gap-2 mb-4">
         <Clock className="h-5 w-5 text-primary" />
         <h2 className="text-lg font-semibold">Scheduled Casts</h2>
       </div>
       <div className="space-y-2">
-        {scheduledCasts.map((cast) => (
+        {scheduledCasts.sort((a, b) => +a.scheduledTime - +b.scheduledTime).map((cast) => (
           <div
             key={cast.id}
             className="flex items-center justify-between p-3 rounded-lg bg-muted/50 border"

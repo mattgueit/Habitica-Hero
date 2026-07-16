@@ -356,7 +356,7 @@ const Index = () => {
     // If scheduled, create a scheduled cast
     if (scheduledTime) {
       const newScheduledCast: ScheduledCast = {
-        id: `scheduled-${Date.now()}`,
+        id: `scheduled-${scheduledTime.getTime()}`,
         ability: selectedAbility,
         iterations,
         scheduledTime,
@@ -591,7 +591,6 @@ const Index = () => {
               open={dialogOpen}
               onOpenChange={setDialogOpen}
               onCast={handleCast}
-              remainingDailyBuffs={MAX_DAILY_BUFFS - buffCount}
             />
           </TabsContent>
 
