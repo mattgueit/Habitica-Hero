@@ -289,7 +289,7 @@ const Index = () => {
 
     setCasting(true);
     stopCastingRef.current = false;
-    const newResponses: CastResponse[] = [];
+    const newResponses: CastResponse[] = responses;
 
     try {
       let successfulCasts = 0;
