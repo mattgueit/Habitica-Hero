@@ -2,8 +2,11 @@ import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Task, Week } from "@/types/habitica";
-import { fetchTasks, scoreTask } from "@/services/habiticaApi";
+import {createTask, fetchTasks, scoreTask} from "@/services/habiticaApi";
 import { toast } from "@/hooks/use-toast";
+import {Label} from "@/components/ui/label.tsx";
+import {Input} from "@/components/ui/input.tsx";
+import {Button} from "@/components/ui/button.tsx";
 
 interface TaskListProps {
   onTaskScored: () => void;
@@ -32,6 +35,7 @@ export const TaskList = ({ onTaskScored }: TaskListProps) => {
   const [loading, setLoading] = useState(true);
   const [scoredTaskIds, setScoredTaskIds] = useState<Set<string>>(new Set());
   const [scoringTaskIds, setScoringTaskIds] = useState<Set<string>>(new Set());
+  const [taskName, setTaskName] = useState<string>("");
 
   useEffect(() => {
     loadTasks();
@@ -79,6 +83,26 @@ export const TaskList = ({ onTaskScored }: TaskListProps) => {
     }
   };
 
+  const handleCreateTask = async () => {
+    setLoading(true);
+    try {
+      await createTask(taskName);
+      toast({
+        title: "Task created!",
+        description: `Created task "${taskName}".`,
+      })
+    } catch (error) {
+      toast({
+        title: "Failed to create task",
+        description: `Could not create task "${taskName}".`,
+        variant: "destructive"
+      });
+    } finally {
+      setTaskName("");
+      await loadTasks();
+    }
+  }
+
   if (loading) {
     return (
       <Card className="p-6">
@@ -98,6 +122,19 @@ export const TaskList = ({ onTaskScored }: TaskListProps) => {
   return (
     <div className="space-y-2">
       <h2 className="text-xl font-bold mb-4">Daily Tasks</h2>
+      <div className="flex items-center gap-3">
+        <Label htmlFor="task">
+          Task
+        </Label>
+        <Input
+            id="iterations"
+            type="text"
+            value={taskName}
+            onChange={(e) => setTaskName(e.target.value)}
+            className="[&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]"
+        />
+        <Button onClick={handleCreateTask}>Create</Button>
+      </div>
       {tasks.map((task) => {
         const relevant = isRelevantForToday(task);
         const isCompleted = task.completed || scoredTaskIds.has(task.id);

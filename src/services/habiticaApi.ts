@@ -164,6 +164,16 @@ export const scoreTask = async (taskId: string): Promise<void> => {
   if (!response.ok) throw new Error(`API error: ${response.status}`);
 };
 
+export const createTask = async (text: string): Promise<void> => {
+  const url = `${HABITICA_API_BASE}/tasks/user`;
+  const response = await fetch(url, {
+    method: "POST",
+    headers: buildHeaders(),
+    body: JSON.stringify({ text, type: 'daily' }),
+  })
+  if (!response.ok) throw new Error(`API error: ${response.status}`);
+}
+
 // Fetch user, cache and return party id
 export const fetchAndCachePartyId = async (): Promise<string | null> => {
   const cached = getCachedPartyId();
